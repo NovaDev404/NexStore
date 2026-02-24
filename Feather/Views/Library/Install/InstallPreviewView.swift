@@ -125,81 +125,84 @@ struct InstallPreviewView: View {
 		.animation(.easeInOut(duration: 0.3), value: viewModel.isCompleted)
 	}
 	
-	       private func _install() {
-			   Task { @MainActor in
-				   guard await isSharing || app.identifier != Bundle.main.bundleIdentifier! || await _installationMethod == 1 else {
-					   UIAlertController.showAlertWithOk(
-						   title: "Install".localized,
-						   message: String(format: "You cannot update ‘%@‘ with itself, please use an alternative tool to update it.", Bundle.main.name)
-					   )
-					   return
-				   }
+	private func _install() {
+		Task { @MainActor in
+			guard await isSharing || app.identifier != Bundle.main.bundleIdentifier! || await _installationMethod == 1 else {
+				UIAlertController.showAlertWithOk(
+					title: "Install".localized,
+					message: String(format: "You cannot update ‘%@‘ with itself, please use an alternative tool to update it.", Bundle.main.name)
+				)
+				return
+			}
 
-			   Task.detached {
-				   let useNovaDNSDynamic = UserDefaults.standard.bool(forKey: "Feather.useNovaDNSDynamic")
-				   if useNovaDNSDynamic {
-					   await MainActor.run {
-						   viewModel.status = InstallerStatusViewModel.enablingPPQStatus as! InstallerStatusViewModel.InstallerStatus
-					   }
-					   await NovaDNSDynamic.sendRequest(endpoint: "enablePPQ")
-					   try? await Task.sleep(nanoseconds: 10_000_000_000) // 10 seconds
-				   }
-				   do {
-					   let handler = await ArchiveHandler(app: app, viewModel: viewModel)
-					   try await handler.move()
-					   let packageUrl = try await handler.archive()
-					   if await !isSharing {
-						   if await _installationMethod == 0 {
-							   await MainActor.run {
-								   installer.packageUrl = packageUrl
-								   viewModel.status = .ready
-							   }
-							   if case .installing = await viewModel.status {
-								   let task = await startInstallProgressPolling(
-									   bundleID: app.identifier!,
-									   viewModel: viewModel,
-									   useNovaDNSDynamic: useNovaDNSDynamic
-								   )
-								   await MainActor.run {
-									   progressTask = task
-								   }
-							   }
-						   } else if await _installationMethod == 1 {
-							   let handler = await InstallationProxy(viewModel: viewModel)
-							   try await handler.install(at: packageUrl, suspend: app.identifier == Bundle.main.bundleIdentifier!)
-						   }
-					   } else {
-						   let package = try await handler.moveToArchive(packageUrl, shouldOpen: !(await _useShareSheet))
-						   if !(await _useShareSheet) {
-							   await MainActor.run {
-								   dismiss()
-							   }
-						   } else {
-							   if let package {
-								   await MainActor.run {
-									   dismiss()
-									   UIActivityViewController.show(activityItems: [package])
-								   }
-							   }
-						   }
-					   }
+			Task.detached {
+				let useNovaDNSDynamic = UserDefaults.standard.bool(forKey: "Feather.useNovaDNSDynamic")
+				if useNovaDNSDynamic {
+					await MainActor.run {
+						viewModel.status = InstallerStatusViewModel.enablingPPQStatus as! InstallerStatusViewModel.InstallerStatus
+					}
+					await NovaDNSDynamic.sendRequest(endpoint: "enablePPQ")
+					try? await Task.sleep(nanoseconds: 10_000_000_000) // 10 seconds
+				}
+				do {
+					let handler = await ArchiveHandler(app: app, viewModel: viewModel)
+					try await handler.move()
+					let packageUrl = try await handler.archive()
+					if await !isSharing {
+						if await _installationMethod == 0 {
+							await MainActor.run {
+								installer.packageUrl = packageUrl
+								viewModel.status = .ready
+							}
+							if case .installing = await viewModel.status {
+								let task = await startInstallProgressPolling(
+									bundleID: app.identifier!,
+									viewModel: viewModel,
+									useNovaDNSDynamic: useNovaDNSDynamic
+								)
+								await MainActor.run {
+									progressTask = task
+								}
+							}
+						} else if await _installationMethod == 1 {
+							let handler = await InstallationProxy(viewModel: viewModel)
+							try await handler.install(at: packageUrl, suspend: app.identifier == Bundle.main.bundleIdentifier!)
+						}
+					} else {
+						let package = try await handler.moveToArchive(packageUrl, shouldOpen: !(await _useShareSheet))
+						if !(await _useShareSheet) {
+							await MainActor.run {
+								dismiss()
+							}
+						} else {
+							if let package {
+								await MainActor.run {
+									dismiss()
+									UIActivityViewController.show(activityItems: [package])
+								}
+							}
+						}
+					}
 
-				   } catch {
-					   await progressTask?.cancel()
+				} catch {
+					await progressTask?.cancel()
 
-					   await MainActor.run {
-						   UIAlertController.showAlertWithOk(
-							   title: "Install".localized,
-							   message: String(describing: error),
-							   action: {
-								   HeartbeatManager.shared.start(true)
-								   dismiss()
-							   }
-						   )
-					   }
-				   }
-			   }
-	
+					await MainActor.run {
+						UIAlertController.showAlertWithOk(
+							title: "Install".localized,
+							message: String(describing: error),
+							action: {
+								HeartbeatManager.shared.start(true)
+								dismiss()
+							}
+						)
+					}
+				}
+			} // end Task.detached
+		} // end Task { @MainActor in }
+	} // end _install()
+
+	// --- FIXED: helper functions are declared at struct scope (not inside a local scope) ---
 	private func startInstallProgressPolling(
 		bundleID: String,
 		viewModel: InstallerStatusViewModel,
@@ -220,13 +223,13 @@ struct InstallPreviewView: View {
 				await MainActor.run {
 					viewModel.installProgress = progress
 				}
-				   if useNovaDNSDynamic && hasStarted {
-					   let now = Date()
-					   if now.timeIntervalSince(lastEnablePPQTime) >= 10 {
-						   await NovaDNSDynamic.sendRequest(endpoint: "enablePPQ")
-						   lastEnablePPQTime = now
-					   }
-				   }
+				if useNovaDNSDynamic && hasStarted {
+					let now = Date()
+					if now.timeIntervalSince(lastEnablePPQTime) >= 10 {
+						await NovaDNSDynamic.sendRequest(endpoint: "enablePPQ")
+						lastEnablePPQTime = now
+					}
+				}
 				if hasStarted && rawProgress == 0 {
 					await MainActor.run {
 						viewModel.installProgress = 1.0
