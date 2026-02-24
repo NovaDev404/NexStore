@@ -127,6 +127,7 @@ enum FR {
 		HeartbeatManager.shared.start(true)
 	}
 	
+	@MainActor
 	static func downloadSSLCertificates(
 		from urlString: String,
 		completion: @escaping (Bool) -> Void
@@ -152,6 +153,7 @@ enum FR {
 		}
 	}
 	
+	@MainActor
 	static func handleSource(
 		_ urlString: String,
 		competion: @escaping () -> Void
@@ -180,7 +182,8 @@ enum FR {
 		}
 	}
 	
-	static func exportCertificateAndOpenUrl(using template: String) {
+	@MainActor
+	static func exportCertificateAndOpenUrl(using template: String) async {
 		// Helper that performs the export for a given certificate
 		func performExport(for certificate: CertificatePair) {
 			guard
@@ -207,7 +210,7 @@ enum FR {
 				return
 			}
 			
-			UIApplication.shared.open(callbackUrl)
+			   await UIApplication.shared.open(callbackUrl)
 		}
 		
 		let certificates = Storage.shared.getAllCertificates()
