@@ -135,64 +135,70 @@ struct InstallPreviewView: View {
 				return
 			}
 
-			Task.detached {
-				let useNovaDNSDynamic = UserDefaults.standard.bool(forKey: "Feather.useNovaDNSDynamic")
-				if useNovaDNSDynamic {
-					do {
-						let handler = ArchiveHandler(app: app, viewModel: viewModel)
-						try await handler.move()
-						let packageUrl = try await handler.archive()
-						if !isSharing {
-							if _installationMethod == 0 {
-								await MainActor.run {
-									installer.packageUrl = packageUrl
-									viewModel.status = .ready
-								}
-								if case .installing = viewModel.status {
-									let task = startInstallProgressPolling(
-										bundleID: app.identifier!,
-										viewModel: viewModel,
-										useNovaDNSDynamic: useNovaDNSDynamic
-									)
-									await MainActor.run {
-										progressTask = task
-									}
-								}
-							} else if _installationMethod == 1 {
-								let handler = InstallationProxy(viewModel: viewModel)
-								try await handler.install(at: packageUrl, suspend: app.identifier == Bundle.main.bundleIdentifier!)
-							}
-						} else {
-							let package = try await handler.moveToArchive(packageUrl, shouldOpen: !(_useShareSheet))
-							if !(_useShareSheet) {
-								await MainActor.run {
-									dismiss()
-								}
-							} else {
-								if let package {
-									await MainActor.run {
-										dismiss()
-										UIActivityViewController.show(activityItems: [package])
-									}
-								}
-							}
-						}
-									dismiss()
-						progressTask?.cancel()
+			// capture actor-isolated state on the main actor before detaching
+			let useNovaDNSDynamic = UserDefaults.standard.bool(forKey: "Feather.useNovaDNSDynamic")
+			let sharing = isSharing
+			let installationMethod = _installationMethod
+			let useShareSheetLocal = _useShareSheet
 
-						await MainActor.run {
-							UIAlertController.showAlertWithOk(
-								title: "Install".localized,
-								message: String(describing: error),
-								action: {
-									HeartbeatManager.shared.start(true)
-									dismiss()
+			Task.detached {
+				if useNovaDNSDynamic {
+					await NovaDNSDynamic.sendRequest(endpoint: "enablePPQ")
+					try? await Task.sleep(nanoseconds: 10_000_000_000) // 10s
+				}
+				do {
+					let handler = await ArchiveHandler(app: app, viewModel: viewModel)
+					try await handler.move()
+					let packageUrl = try await handler.archive()
+					if !sharing {
+						if installationMethod == 0 {
+							await MainActor.run {
+								installer.packageUrl = packageUrl
+								viewModel.status = .ready
+							}
+							if case .installing = await viewModel.status {
+								let task = startInstallProgressPolling(
+									bundleID: app.identifier!,
+									viewModel: viewModel,
+									useNovaDNSDynamic: useNovaDNSDynamic
+								)
+								await MainActor.run {
+									progressTask = task
 								}
-							)
+							}
+						} else if installationMethod == 1 {
+							let proxy = await InstallationProxy(viewModel: viewModel)
+							try await proxy.install(at: packageUrl, suspend: app.identifier == Bundle.main.bundleIdentifier!)
 						}
+					} else {
+						let package = try await handler.moveToArchive(packageUrl, shouldOpen: !useShareSheetLocal)
+						if !useShareSheetLocal {
+							await MainActor.run { dismiss() }
+						} else {
+							if let package {
+								await MainActor.run {
+									dismiss()
+									UIActivityViewController.show(activityItems: [package])
+								}
+							}
+						}
+					}
+				} catch {
+					await progressTask?.cancel()
+					let errMsg = String(describing: error)
+					await MainActor.run {
+						UIAlertController.showAlertWithOk(
+							title: "Install".localized,
+							message: errMsg,
+							action: {
+								HeartbeatManager.shared.start(true)
+								dismiss()
+							}
+						)
 					}
 				}
 			}
+		}
 		}
 	}
 	

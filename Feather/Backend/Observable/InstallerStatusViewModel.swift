@@ -24,13 +24,20 @@ extension InstallerStatusViewModel {
 			return "bolt.horizontal.fill"
 		}
 		switch status {
-		case .none: "archivebox.fill"
-		case .ready: "app.gift"
-		case .sendingManifest, .sendingPayload: "paperplane.fill"
-		case .installing: "square.and.arrow.down"
-		case .completed: "app.badge.checkmark"
-		case .broken: "exclamationmark.triangle.fill"
-		default: "archivebox.fill"
+		case .none:
+			return "archivebox.fill"
+		case .ready:
+			return "app.gift"
+		case .sendingManifest, .sendingPayload:
+			return "paperplane.fill"
+		case .installing:
+			return "square.and.arrow.down"
+		case .completed:
+			return "app.badge.checkmark"
+		case .broken:
+			return "exclamationmark.triangle.fill"
+		default:
+			return "archivebox.fill"
 		}
 	}
 
@@ -39,14 +46,22 @@ extension InstallerStatusViewModel {
 			return "Enabling PPQ".localized
 		}
 		switch status {
-		case .none: "Packaging".localized
-		case .ready: "Ready".localized
-		case .sendingManifest: "Sending Manifest".localized
-		case .sendingPayload: "Sending Payload".localized
-		case .installing: "Installing".localized
-		case .completed: "Completed".localized
-		case .broken: "Error".localized
-		default: "Packaging".localized
+		case .none:
+			return "Packaging".localized
+		case .ready:
+			return "Ready".localized
+		case .sendingManifest:
+			return "Sending Manifest".localized
+		case .sendingPayload:
+			return "Sending Payload".localized
+		case .installing:
+			return "Installing".localized
+		case .completed:
+			return "Completed".localized
+		case .broken:
+			return "Error".localized
+		default:
+			return "Packaging".localized
 		}
 	}
 }
