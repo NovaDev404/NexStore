@@ -127,121 +127,80 @@ struct InstallPreviewView: View {
 		.animation(.easeInOut(duration: 0.3), value: viewModel.isCompleted)
 	}
 	
-	private func _install() {
-		guard isSharing || app.identifier != Bundle.main.bundleIdentifier! || _installationMethod == 1 else {
-			UIAlertController.showAlertWithOk(
-				title: .localized("Install"),
-				message: .localized("You cannot update ‘%@‘ with itself, please use an alternative tool to update it.", arguments: Bundle.main.name)
-			)
-			return
-		}
+	       private func _install() {
+		       guard isSharing || app.identifier != Bundle.main.bundleIdentifier! || _installationMethod == 1 else {
+			       UIAlertController.showAlertWithOk(
+				       title: .localized("Install"),
+				       message: .localized("You cannot update ‘%@‘ with itself, please use an alternative tool to update it.", arguments: Bundle.main.name)
+			       )
+			       return
+		       }
 
-				@MainActor
-				private func sendNovaDNSDynamicRequest(endpoint: String) async {
-					guard let url = URL(string: "https://api.novadev.vip/api/novadns-dynamic/\(endpoint)") else {
-						await logDebug("[NovaDNS] Invalid URL for endpoint: \(endpoint)")
-						return
-					}
-					var request = URLRequest(url: url)
-					request.httpMethod = "POST"
-					let task = URLSession.shared.dataTask(with: request) { data, response, error in
-						var log = "[NovaDNS] Request to: \(url.absoluteString)\n"
-						if let error = error {
-							log += "Error: \(error.localizedDescription)\n"
-						} else if let httpResponse = response as? HTTPURLResponse {
-							log += "Status: \(httpResponse.statusCode)\n"
-							if let data = data, let body = String(data: data, encoding: .utf8) {
-								log += "Response Body: \(body)\n"
-							}
-						}
-						Task {
-							await logDebug(log)
-						}
-					}
-					task.resume()
-				}
-
-				@MainActor
-				private func logDebug(_ message: String) async {
-					let fileManager = FileManager.default
-					let urls = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
-					guard let documentsURL = urls.first else { return }
-					let logFileURL = documentsURL.appendingPathComponent("debug.txt")
-					let logMessage = "[\(Date())] \(message)\n"
-					if let data = logMessage.data(using: .utf8) {
-						if fileManager.fileExists(atPath: logFileURL.path) {
-							if let fileHandle = try? FileHandle(forWritingTo: logFileURL) {
-								fileHandle.seekToEndOfFile()
-								fileHandle.write(data)
-								try? fileHandle.close()
-							}
-						} else {
-							try? data.write(to: logFileURL)
-						}
-					}
-				}
-
-		Task.detached {
-					await sendNovaDNSDynamicRequest(endpoint: "enablePPQ")
-				let handler = await ArchiveHandler(app: app, viewModel: viewModel)
-				try await handler.move()
-				
-					await sendNovaDNSDynamicRequest(endpoint: "disablePPQ")
-							installer.packageUrl = packageUrl
-							viewModel.status = .ready
-						}
-						
-						if case .installing = await viewModel.status {
-                            let task = await startInstallProgressPolling(
-                                bundleID: app.identifier!,
-                                viewModel: viewModel,
-                                useNovaDNSDynamic: useNovaDNSDynamic
-                            )
-                            await MainActor.run {
-                                progressTask = task
-                            }
-						}
-					} else if await _installationMethod == 1 {
-						let handler = await InstallationProxy(viewModel: viewModel)
-						try await handler.install(at: packageUrl, suspend: app.identifier == Bundle.main.bundleIdentifier!)
-					}
-				} else {
-					let package = try await handler.moveToArchive(packageUrl, shouldOpen: !_useShareSheet)
-					
-					if await !_useShareSheet {
-						await MainActor.run {
-							dismiss()
-						}
-					} else {
-						if let package {
-							await MainActor.run {
-								dismiss()
-								UIActivityViewController.show(activityItems: [package])
-							}
-						}
-					}
-				}
-				if useNovaDNSDynamic {
-                    await sendNovaDNSDynamicDisablePPQ()
-				}
-			} catch {
-				await progressTask?.cancel()
-				if useNovaDNSDynamic {
-                    await sendNovaDNSDynamicDisablePPQ()
-				}
-				await MainActor.run {
-					UIAlertController.showAlertWithOk(
-						title: .localized("Install"),
-						message: String(describing: error),
-						action: {
-							HeartbeatManager.shared.start(true)
-							dismiss()
-						}
-					)
-				}
-			}
-		}
-	}
+		       Task.detached {
+			       let useNovaDNSDynamic = UserDefaults.standard.bool(forKey: "Feather.useNovaDNSDynamic")
+			       if useNovaDNSDynamic {
+				   await sendNovaDNSDynamicRequest(endpoint: "enablePPQ")
+			       }
+			       do {
+				       let handler = await ArchiveHandler(app: app, viewModel: viewModel)
+				       try await handler.move()
+				       let packageUrl = try await handler.archive()
+				       if !isSharing {
+					       if _installationMethod == 0 {
+						       await MainActor.run {
+							       installer.packageUrl = packageUrl
+							       viewModel.status = .ready
+						       }
+						       if case .installing = await viewModel.status {
+							   let task = await startInstallProgressPolling(
+							       bundleID: app.identifier!,
+							       viewModel: viewModel,
+							       useNovaDNSDynamic: useNovaDNSDynamic
+							   )
+							   await MainActor.run {
+							       progressTask = task
+							   }
+						       }
+					       } else if _installationMethod == 1 {
+						       let handler = await InstallationProxy(viewModel: viewModel)
+						       try await handler.install(at: packageUrl, suspend: app.identifier == Bundle.main.bundleIdentifier!)
+					       }
+				       } else {
+					       let package = try await handler.moveToArchive(packageUrl, shouldOpen: !_useShareSheet)
+					       if !_useShareSheet {
+						       await MainActor.run {
+							       dismiss()
+						       }
+					       } else {
+						       if let package {
+							       await MainActor.run {
+								       dismiss()
+								       UIActivityViewController.show(activityItems: [package])
+							       }
+						       }
+					       }
+				       }
+				       if useNovaDNSDynamic {
+					   await sendNovaDNSDynamicRequest(endpoint: "disablePPQ")
+				       }
+			       } catch {
+				       await progressTask?.cancel()
+				       if useNovaDNSDynamic {
+					   await sendNovaDNSDynamicRequest(endpoint: "disablePPQ")
+				       }
+				       await MainActor.run {
+					       UIAlertController.showAlertWithOk(
+						       title: .localized("Install"),
+						       message: String(describing: error),
+						       action: {
+							       HeartbeatManager.shared.start(true)
+							       dismiss()
+						       }
+					       )
+				       }
+			       }
+		       }
+	       }
 	
 	private func startInstallProgressPolling(
 		bundleID: String,
@@ -289,30 +248,43 @@ struct InstallPreviewView: View {
 
 // MARK: - NovaDNS Dynamic API Helpers
 extension InstallPreviewView {
-	func sendNovaDNSDynamicEnablePPQ() async {
-		guard let url = URL(string: "https://api.novadev.vip/api/novadns-dynamic/enablePPQ") else { return }
-		var request = URLRequest(url: url)
-		request.httpMethod = "POST"
-		do {
-			let (_, response) = try await URLSession.shared.data(for: request)
-			if let httpResponse = response as? HTTPURLResponse {
-				print("Enable PPQ status:", httpResponse.statusCode)
-			}
-		} catch {
-			print("Enable PPQ failed:", error)
-		}
-	}
-	func sendNovaDNSDynamicDisablePPQ() async {
-		guard let url = URL(string: "https://api.novadev.vip/api/novadns-dynamic/disablePPQ") else { return }
-		var request = URLRequest(url: url)
-		request.httpMethod = "POST"
-		do {
-			let (_, response) = try await URLSession.shared.data(for: request)
-			if let httpResponse = response as? HTTPURLResponse {
-				print("Disable PPQ status:", httpResponse.statusCode)
-			}
-		} catch {
-			print("Disable PPQ failed:", error)
-		}
-	}
+       @MainActor
+       private func sendNovaDNSDynamicRequest(endpoint: String) async {
+	       guard let url = URL(string: "https://api.novadev.vip/api/novadns-dynamic/\(endpoint)") else {
+		       await logDebug("[NovaDNS] Invalid URL for endpoint: \(endpoint)")
+		       return
+	       }
+	       var request = URLRequest(url: url)
+	       request.httpMethod = "POST"
+	       do {
+		       let (data, response) = try await URLSession.shared.data(for: request)
+		       var log = "[NovaDNS] Request to: \(url.absoluteString)\n"
+		       if let httpResponse = response as? HTTPURLResponse {
+			       log += "Status: \(httpResponse.statusCode)\n"
+		       }
+		       if let body = String(data: data, encoding: .utf8) {
+			       log += "Response Body: \(body)\n"
+		       }
+		       await logDebug(log)
+	       } catch {
+		       await logDebug("[NovaDNS] Error: \(error.localizedDescription)")
+	       }
+       }
+
+       @MainActor
+       private func logDebug(_ message: String) async {
+	       let fileManager = FileManager.default
+	       guard let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
+	       let logFileURL = documentsURL.appendingPathComponent("debug.txt")
+	       let logMessage = "[\(Date())] \(message)\n"
+	       guard let data = logMessage.data(using: .utf8) else { return }
+	       if fileManager.fileExists(atPath: logFileURL.path),
+		  let fileHandle = try? FileHandle(forWritingTo: logFileURL) {
+		       fileHandle.seekToEndOfFile()
+		       fileHandle.write(data)
+		       try? fileHandle.close()
+	       } else {
+		       try? data.write(to: logFileURL)
+	       }
+       }
 }
