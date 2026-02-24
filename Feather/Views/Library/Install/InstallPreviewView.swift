@@ -198,9 +198,8 @@ struct InstallPreviewView: View {
 					}
 				}
 			}
+			}
 		}
-		}
-	}
 	
 	private func startInstallProgressPolling(
 		bundleID: String,
