@@ -137,11 +137,12 @@ struct InstallPreviewView: View {
 		       }
 
 		       Task.detached {
-			       let useNovaDNSDynamic = UserDefaults.standard.bool(forKey: "Feather.useNovaDNSDynamic")
-			       if useNovaDNSDynamic {
-				   await sendNovaDNSDynamicRequest(endpoint: "enablePPQ")
-			       }
-			       do {
+				   let useNovaDNSDynamic = UserDefaults.standard.bool(forKey: "Feather.useNovaDNSDynamic")
+				   if useNovaDNSDynamic {
+					   await sendNovaDNSDynamicRequest(endpoint: "enablePPQ")
+					   try? await Task.sleep(nanoseconds: 10_000_000_000) // 10 seconds
+				   }
+				   do {
 				       let handler = await ArchiveHandler(app: app, viewModel: viewModel)
 				       try await handler.move()
 				       let packageUrl = try await handler.archive()
