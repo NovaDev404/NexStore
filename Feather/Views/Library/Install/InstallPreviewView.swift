@@ -19,6 +19,7 @@ struct InstallPreviewView: View {
 	@AppStorage("Feather.serverMethod") private var _serverMethod: Int = 0
 	@State private var _isWebviewPresenting = false
 	@State private var progressTask: Task<Void, Never>?
+	@State private var _isEnablingPPQ: Bool = false
 	
 	var app: AppInfoPresentable
 	@StateObject var viewModel: InstallerStatusViewModel
@@ -104,7 +105,10 @@ struct InstallPreviewView: View {
 	
 	@ViewBuilder
 	private func _status() -> some View {
-		Label(viewModel.statusLabel, systemImage: viewModel.statusImage)
+		Label(
+			_isEnablingPPQ ? "Enabling PPQ".localized : viewModel.statusLabel,
+			systemImage: _isEnablingPPQ ? "bolt.horizontal.fill" : viewModel.statusImage
+		)
 			.padding()
 			.labelStyle(.titleAndIcon)
 			.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
@@ -146,7 +150,9 @@ struct InstallPreviewView: View {
 
 			Task.detached {
 				if useNovaDNSDynamic {
+					await MainActor.run { self._isEnablingPPQ = true }
 					await NovaDNSDynamic.sendRequest(endpoint: "enablePPQ")
+					await MainActor.run { self._isEnablingPPQ = false }
 					try? await Task.sleep(nanoseconds: 10_000_000_000) // 10s
 				}
 				do {
