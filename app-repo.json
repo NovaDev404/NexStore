@@ -5,6 +5,34 @@
   "website": "https://github.com/khcrysalis/Feather",
   "apps": [
     {
+      "name": "Feather - NovaDNS Dynamic Support",
+      "bundleIdentifier": "thewonderofyou.Feather",
+      "developerName": "Samara & NovaDev404",
+      "iconURL": "https://github.com/NovaDev404/Feather/blob/v1.x/iOS/Resources/Icons/Main/Mac@3x.png?raw=true",
+      "localizedDescription": "Feather is a free on-device iOS application manager/installer built with UIKit for quality.",
+      "subtitle": "On-device signing application",
+      "tintColor": "848ef9",
+      "versions": [
+        {
+          "version": "2.6.0",
+          "date": "2025-12-22T08:20:00Z",
+          "size": 12598584,
+          "downloadURL": "https://github.com/NovaDev404/Feather/releases/download/v2.6.0/Feather.ipa"
+        }
+      ],
+      "appPermissions": {},
+      "screenshotURLs": [
+        "https://github.com/khcrysalis/NovaDev404/blob/v1.x/Images/Library.png?raw=true",
+        "https://github.com/khcrysalis/NovaDev404/blob/v1.x/Images/Repos.png?raw=true",
+        "https://github.com/khcrysalis/NovaDev404/blob/v1.x/Images/Sign.png?raw=true",
+        "https://github.com/khcrysalis/NovaDev404/blob/v1.x/Images/Store.png?raw=true"
+      ],
+      "version": "2.6.0",
+      "versionDate": "2025-12-22T08:20:00Z",
+      "size": 12598584,
+      "downloadURL": "https://github.com/NovaDev404/Feather/releases/download/v2.6.0/Feather.ipa"
+    },
+    {
       "name": "Feather",
       "bundleIdentifier": "thewonderofyou.Feather",
       "developerName": "Samara",
