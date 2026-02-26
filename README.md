@@ -1,9 +1,8 @@
 # Feather
 
-[![GitHub Release](https://img.shields.io/github/v/release/claration/Feather?include_prereleases)](https://github.com/claration/Feather/releases)
-[![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/claration/Feather/total)](https://github.com/claration/Feather/releases)
-[![GitHub License](https://img.shields.io/github/license/claration/Feather?color=%23C96FAD)](https://github.com/claration/Feather/blob/main/LICENSE)
-[![Sponsor Me](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86)](https://github.com/sponsors/khcrysalis)
+[![GitHub Release](https://img.shields.io/github/v/release/NovaDev404/Feather?include_prereleases)](https://github.com/NovaDev404/Feather/releases)
+[![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/NovaDev404/Feather/total)](https://github.com/NovaDev404/Feather/releases)
+[![GitHub License](https://img.shields.io/github/license/NovaDev404/Feather?color=%23C96FAD)](https://github.com/NovaDev404/Feather/blob/main/LICENSE)
 
 This app allows you to install and manage applications contained in a single app, using certificate pairs and various installation techniques to allow apps to install to your device. This is an entirely stock application and uses built-in features to be able to do this!
 
@@ -25,12 +24,12 @@ This app allows you to install and manage applications contained in a single app
 
 ## Download
 
-Visit [releases](https://github.com/claration/Feather/releases) and get the latest `.ipa`.
+Visit [releases](https://github.com/NovaDev404/Feather/releases) and get the latest `.ipa`.
 
-<a href="https://celloserenity.github.io/altdirect/?url=https://raw.githubusercontent.com/claration/Feather/refs/heads/main/app-repo.json" target="_blank">
+<a href="https://celloserenity.github.io/altdirect/?url=https://raw.githubusercontent.com/NovaDev404/Feather/refs/heads/main/app-repo.json" target="_blank">
    <img src="https://github.com/CelloSerenity/altdirect/blob/main/assets/png/AltSource_Blue.png?raw=true" alt="Add AltSource" width="200">
 </a>
-<a href="https://github.com/claration/Feather/releases/latest/download/Feather.ipa" target="_blank">
+<a href="https://github.com/NovaDev404/Feather/releases/latest/download/Feather.ipa" target="_blank">
    <img src="https://github.com/CelloSerenity/altdirect/blob/main/assets/png/Download_Blue.png?raw=true" alt="Download .ipa" width="200">
 </a>
 
@@ -47,11 +46,11 @@ Visit the [HOW IT WORKS](./HOW_IT_WORKS.md) page.
 
 ## Star History
 
-<a href="https://star-history.com/#claration/Feather&Date">
+<a href="https://star-history.com/#NovaDev404/Feather&Date">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=claration/Feather&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=claration/Feather&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=claration/Feather&type=Date" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=NovaDev404/Feather&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=NovaDev404/Feather&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=NovaDev404/Feather&type=Date" />
  </picture>
 </a>
 
@@ -69,6 +68,6 @@ Visit the [HOW IT WORKS](./HOW_IT_WORKS.md) page.
 
 ## License 
 
-This project is licensed under the GPL-3.0 license. You can see the full details of the license [here](https://github.com/claration/Feather/blob/main/LICENSE). It's under this specific license because I wanted to make a project that is transparent to the user thats related to certificate paired sideloading, before this project there weren't any open source projects that filled in this gap.
+This project is licensed under the GPL-3.0 license. You can see the full details of the license [here](https://github.com/NovaDev404/Feather/blob/main/LICENSE). It's under this specific license because I wanted to make a project that is transparent to the user thats related to certificate paired sideloading, before this project there weren't any open source projects that filled in this gap.
 
 By contributing to this project, you agree to license your code under the GPL-3.0 license as well (including agreeing to license exceptions), ensuring that your work, like all other contributions, remains freely accessible and open.
