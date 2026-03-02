@@ -14,20 +14,34 @@ extension AppIconView {
 		var displayName: String
 		var author: String
 		var key: String?
+		var fileName: String
 		var image: UIImage
 		var id: String { key ?? displayName }
 		
-		init(displayName: String, author: String, key: String? = nil) {
+		init(displayName: String, author: String, key: String? = nil, fileName: String? = nil) {
 			self.displayName = displayName
 			self.author = author
 			self.key = key
-			self.image = altImage(key)
+			self.fileName = fileName ?? key ?? "Icon"
+			self.image = altImage(self.fileName)
 		}
 	}
 	
-	static func altImage(_ name: String?) -> UIImage {
-		let path = Bundle.main.bundleURL.appendingPathComponent((name ?? "AppIcon60x60") + "@2x.png")
-		return UIImage(contentsOfFile: path.path) ?? UIImage()
+	static func altImage(_ name: String) -> UIImage {
+		let candidates: [URL?] = [
+			Bundle.main.url(forResource: "\(name)@2x", withExtension: "png", subdirectory: "Icons/Main"),
+			Bundle.main.url(forResource: name, withExtension: "png", subdirectory: "Icons/Main"),
+			Bundle.main.url(forResource: "\(name)@2x", withExtension: "png"),
+			Bundle.main.url(forResource: name, withExtension: "png")
+		]
+		
+		for url in candidates.compactMap({ $0 }) {
+			if let image = UIImage(contentsOfFile: url.path) {
+				return image
+			}
+		}
+		
+		return UIImage()
 	}
 }
 
@@ -38,15 +52,9 @@ struct AppIconView: View {
 	// dont translate
 	var sections: [String: [AltIcon]] = [
 		"Main": [
-			AltIcon(displayName: "NexStore", author: "Samara", key: nil),
-			AltIcon(displayName: "NexStore (macOS)", author: "Samara", key: "V2Mac"),
-			AltIcon(displayName: "NexStore v1", author: "Samara", key: "V1"),
-			AltIcon(displayName: "NexStore v1 (macOS)", author: "Samara", key: "V1Mac"),
-			AltIcon(displayName: "NexStore v0", author: "Samara", key: "V0"),
-			AltIcon(displayName: "NexStore Donor", author: "Samara", key: "Donor")
-		],
-		"Wingio": [
-			AltIcon(displayName: "NexStore", author: "Wingio", key: "Wing"),
+			AltIcon(displayName: "NexStore", author: "Samara", key: nil, fileName: "Icon"),
+			AltIcon(displayName: "NexStore (macOS)", author: "Samara", key: "Mac", fileName: "Mac"),
+			AltIcon(displayName: "NexStore Donor", author: "Samara", key: "Donor", fileName: "Donor")
 		]
 	]
 	
