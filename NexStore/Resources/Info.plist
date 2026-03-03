@@ -64,7 +64,7 @@
 		<dict>
 			<key>CFBundleIconFiles</key>
 			<array>
-				<string>AppIcon</string>
+				<string>PrimaryAppIcon</string>
 			</array>
 			<key>UIPrerenderedIcon</key>
 			<false/>
