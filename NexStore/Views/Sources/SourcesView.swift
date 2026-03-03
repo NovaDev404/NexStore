@@ -118,7 +118,7 @@ struct SourcesView: View {
 			guard _shouldStar == 6 else { return }
 			
 			let github = UIAlertAction(title: "GitHub", style: .default) { _ in
-				UIApplication.open("https://github.com/khcrysalis/NexStore")
+				UIApplication.open("https://github.com/NovaDev404/NexStore")
 			}
 			
 			let cancel = UIAlertAction(title: .localized("Dismiss"), style: .cancel)

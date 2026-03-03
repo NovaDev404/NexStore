@@ -36,7 +36,7 @@ struct SourcesAddView: View {
 	
 	@State var recommendedSourcesData: [(url: URL, data: ASRepository)] = []
 	let recommendedSources: [URL] = [
-		"https://raw.githubusercontent.com/khcrysalis/NexStore/refs/heads/main/app-repo.json",
+		"https://raw.githubusercontent.com/NovaDev404/NexStore/refs/heads/main/app-repo.json",
 		"https://raw.githubusercontent.com/Aidoku/Aidoku/altstore/apps.json",
 		"https://github.com/chachillie/Flycast-iOS/raw/main/flycast-ios.json",
 		"https://xitrix.github.io/iTorrent/AltStore.json",
@@ -119,7 +119,7 @@ struct SourcesAddView: View {
 							}
 						}
 					} footer: {
-						Text(.localized("Open an [issue](https://github.com/khcrysalis/NexStore/issues) on GitHub if you want your source to be featured."))
+						Text(.localized("Open an [issue](https://github.com/NovaDev404/NexStore/issues) on GitHub if you want your source to be featured."))
 					}
 				}
 			}

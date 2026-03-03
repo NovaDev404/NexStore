@@ -8585,49 +8585,49 @@
         }
       }
     },
-    "Open an [issue](https://github.com/khcrysalis/NexStore/issues) on GitHub if you want your source to be featured." : {
+    "Open an [issue](https://github.com/NovaDev404/NexStore/issues) on GitHub if you want your source to be featured." : {
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Erstelle ein [Issue](https://github.com/khcrysalis/NexStore/issues) auf GitHub wenn du deine Quelle aufgelistet haben möchtest."
+            "value" : "Erstelle ein [Issue](https://github.com/NovaDev404/NexStore/issues) auf GitHub wenn du deine Quelle aufgelistet haben möchtest."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Open an [issue](https://github.com/khcrysalis/NexStore/issues) on GitHub if you want your source to be featured."
+            "value" : "Open an [issue](https://github.com/NovaDev404/NexStore/issues) on GitHub if you want your source to be featured."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apri un [problema](https://github.com/khcrysalis/NexStore/issues) su GitHub se vuoi che la tua fonte sia consigliata."
+            "value" : "Apri un [problema](https://github.com/NovaDev404/NexStore/issues) su GitHub se vuoi che la tua fonte sia consigliata."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Otwórz [issue](https://github.com/khcrysalis/NexStore/issues) na GitHubie, jeśli chcesz, aby Twoje źródło zostało wyróżnione."
+            "value" : "Otwórz [issue](https://github.com/NovaDev404/NexStore/issues) na GitHubie, jeśli chcesz, aby Twoje źródło zostało wyróżnione."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kaynağınızın öne çıkarılmasını istiyorsanız GitHub’da bir [sorun kaydı](https://github.com/khcrysalis/NexStore/issues) açın."
+            "value" : "Kaynağınızın öne çıkarılmasını istiyorsanız GitHub’da bir [sorun kaydı](https://github.com/NovaDev404/NexStore/issues) açın."
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mở [issue](https://github.com/khcrysalis/NexStore/issues) trên GitHub nếu bạn muốn nguồn của mình được giới thiệu."
+            "value" : "Mở [issue](https://github.com/NovaDev404/NexStore/issues) trên GitHub nếu bạn muốn nguồn của mình được giới thiệu."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "开启一个[issue](https://github.com/khcrysalis/NexStore/issues)"
+            "value" : "开启一个[issue](https://github.com/NovaDev404/NexStore/issues)"
           }
         }
       }
