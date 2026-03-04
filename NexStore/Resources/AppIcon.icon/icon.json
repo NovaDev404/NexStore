@@ -3,7 +3,7 @@
     {
       "layers" : [
         {
-          "glass" : true,
+          "glass" : false,
           "image-name" : "NexStore.png",
           "name" : "nexstore"
         }

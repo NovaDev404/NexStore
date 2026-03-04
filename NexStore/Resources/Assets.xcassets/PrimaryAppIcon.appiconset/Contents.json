@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "../AppIcon.appiconset/NexStore.png",
+      "filename" : "../../AppIcon.icon/Assets/NexStore.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
