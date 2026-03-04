@@ -37,8 +37,6 @@ $(SCHEMES): deps
 	    -sdk $(PLATFORM) \
 	    -derivedDataPath $(TMP) \
 	    -clonedSourcePackagesDirPath "$(TMP)/SourcePackages" \
-	    -disableAutomaticPackageResolution \
-	    -onlyUsePackageVersionsFromResolvedFile \
 	    -skipPackagePluginValidation \
 	    CODE_SIGNING_ALLOWED=NO \
 	    ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES=NO
