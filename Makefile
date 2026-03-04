@@ -30,13 +30,15 @@ deps:
 
 $(SCHEMES): deps
 	xcodebuild \
-	    -project NexStore.xcodeproj \
+	    -workspace NexStore.xcworkspace \
 	    -scheme "$@" \
 	    -configuration Release \
 	    -arch arm64 \
 	    -sdk $(PLATFORM) \
 	    -derivedDataPath $(TMP) \
 	    -clonedSourcePackagesDirPath "$(TMP)/SourcePackages" \
+	    -disableAutomaticPackageResolution \
+	    -onlyUsePackageVersionsFromResolvedFile \
 	    -skipPackagePluginValidation \
 	    CODE_SIGNING_ALLOWED=NO \
 	    ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES=NO
