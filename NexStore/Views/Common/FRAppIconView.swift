@@ -73,7 +73,7 @@ struct FRAppIconView: View {
 	@Environment(\.colorScheme) private var colorScheme
 	@StateObject private var loader = FRAppIconLoader()
 	
-	@AppStorage("NexStore.userTintColor") private var selectedColorHex: String = "#848ef9"
+	@AppStorage("NexStore.userTintColor") private var selectedColorHex: String = "#1E4ED8"
 	@AppStorage("NexStore.shouldTintIcons") private var shouldTintIcons: Bool = false
 	@AppStorage("NexStore.shouldChangeIconsBasedOffStyle") private var shouldChangeIconsBasedOffStyle: Bool = false
 	

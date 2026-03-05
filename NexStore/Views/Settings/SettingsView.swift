@@ -65,7 +65,7 @@ struct SettingsView: View {
                     Text(.localized("Add and manage certificates used for signing applications."))
                 }
                 
-                NBSection(.localized("Features")) {
+                NBSection(.localized("Options")) {
                     NavigationLink(destination: ConfigurationView()) {
                         Label(.localized("Signing Options"), systemImage: "signature")
                     }
@@ -134,7 +134,7 @@ extension SettingsView {
     
     @ViewBuilder
     private func _directories() -> some View {
-        NBSection(.localized("Misc")) {
+        NBSection(.localized("Folders")) {
             Button(.localized("Open Documents"), systemImage: "folder") {
                 UIApplication.open(URL.documentsDirectory.toSharedDocumentsURL()!)
             }

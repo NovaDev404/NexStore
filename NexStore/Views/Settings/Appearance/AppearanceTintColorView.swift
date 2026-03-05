@@ -9,10 +9,9 @@ import SwiftUI
 
 // MARK: - View
 struct AppearanceTintColorView: View {
-	@AppStorage("NexStore.userTintColor") private var _selectedColorHex: String = "#848ef9"
+	@AppStorage("NexStore.userTintColor") private var _selectedColorHex: String = "#1E4ED8"
 	private let _tintOptions: [(name: String, hex: String)] = [
-		("Default", 		"#848ef9"),
-		("V2", 				"#B496DC"),
+		("Default", 		"#1E4ED8"),
 		("Berry",   		"#ff7a83"),
 		("Cool Blue", 		"#4161F1"),
 		("Fuchsia", 		"#FF00FF"),

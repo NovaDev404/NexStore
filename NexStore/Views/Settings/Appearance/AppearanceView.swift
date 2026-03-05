@@ -29,7 +29,7 @@ struct AppearanceView: View {
 	]
 	
 	@AppStorage("NexStore.userTintColor")
-	private var _selectedColorHex: String = "#848ef9"
+	private var _selectedColorHex: String = "#1E4ED8"
 	
 	private var _tintColorBinding: Binding<Color> {
 		Binding(
