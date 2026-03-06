@@ -5,6 +5,10 @@
   "website": "https://github.com/NovaDev404/NexStore",
   "apps": [
     {
+	  "name": "NexStore",
+	  "localizedDescription": "NexStore - The best sideloading app for iOS!"
+	  "iconURL": "https://raw.githubusercontent.com/NovaDev404/NexStore/main/NexStore/Resources/Icons/Main/Icon@3x.png",
+	  "bundleIdentifier": "com.novadev.nexstore",
       "version": "1.0.0",
       "versionDate": "2026-03-06T21:43:48Z",
       "size": 14060186,
