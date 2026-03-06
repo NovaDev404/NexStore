@@ -5,14 +5,13 @@
   "website": "https://github.com/NovaDev404/NexStore",
   "apps": [
     {
-	  "name": "NexStore",
-	  "localizedDescription": "NexStore - The best sideloading app for iOS!",
-	  "iconURL": "https://raw.githubusercontent.com/NovaDev404/NexStore/main/NexStore/Resources/Icons/Main/Icon@3x.png",
-	  "bundleIdentifier": "com.novadev.nexstore",
-      "version": "1.0.0",
-      "versionDate": "2026-03-06T21:43:48Z",
-      "size": 14060186,
-      "downloadURL": "https://github.com/NovaDev404/NexStore/releases/download/v1.0.0/NexStore.ipa",
+      "name": "NexStore",
+      "bundleIdentifier": "com.novadev.nexstore",
+      "developerName": "NovaDev",
+      "iconURL": "https://raw.githubusercontent.com/NovaDev404/NexStore/main/NexStore/Resources/Icons/Main/Icon@3x.png",
+      "localizedDescription": "NexStore - The best sideloading app for iOS!",
+      "subtitle": "On-device sideloading application",
+      "tintColor": "1E4ED8",
       "versions": [
         {
           "version": "1.0.0",
@@ -20,8 +19,38 @@
           "size": 14060186,
           "downloadURL": "https://github.com/NovaDev404/NexStore/releases/download/v1.0.0/NexStore.ipa"
         }
-      ]
+      ],
+      "appPermissions": {},
+      "screenshotURLs": [
+        "https://raw.githubusercontent.com/NovaDev404/NexStore/main/NexStore/Resources/Screenshots/Screen1.png",
+        "https://raw.githubusercontent.com/NovaDev404/NexStore/main/NexStore/Resources/Screenshots/Screen2.png",
+        "https://raw.githubusercontent.com/NovaDev404/NexStore/main/NexStore/Resources/Screenshots/Screen3.png",
+        "https://raw.githubusercontent.com/NovaDev404/NexStore/main/NexStore/Resources/Screenshots/Screen4.png"
+      ],
+      "version": "1.0.0",
+      "versionDate": "2026-03-06T21:43:48Z",
+      "size": 14060186,
+      "downloadURL": "https://github.com/NovaDev404/NexStore/releases/download/v1.0.0/NexStore.ipa"
     }
   ],
-  "news": []
+  "news": [
+    {
+      "title": "Donate",
+      "identifier": "nexstore-donate",
+      "caption": "NexStore is a free project and relies on community support! Donations help keep development going and bring new updates.",
+      "tintColor": "1E4ED8",
+      "date": "2026-03-01",
+      "url": "https://tinyurl.com/sponsor-nexstore",
+      "notify": false
+    },
+    {
+      "title": "About NexStore",
+      "identifier": "nexstore-about",
+      "caption": "NexStore allows users to sideload apps on iOS devices without a computer. It’s fully managed on-device and provides easy app management.",
+      "tintColor": "1E4ED8",
+      "url": "https://github.com/NovaDev404/NexStore",
+      "date": "2026-03-01",
+      "notify": true
+    }
+  ]
 }
