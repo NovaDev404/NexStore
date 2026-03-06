@@ -4,7 +4,20 @@
   "iconURL": "https://raw.githubusercontent.com/NovaDev404/NexStore/main/NexStore/Resources/Icons/Main/Icon@3x.png",
   "website": "https://github.com/NovaDev404/NexStore",
   "apps": [
+    {
+      "version": "1.0.0",
+      "versionDate": "2026-03-06T21:38:43Z",
+      "size": 14060186,
+      "downloadURL": "https://github.com/NovaDev404/NexStore/releases/download/v1.0.0/NexStore.ipa",
+      "versions": [
+        {
+          "version": "1.0.0",
+          "date": "2026-03-06T21:38:43Z",
+          "size": 14060186,
+          "downloadURL": "https://github.com/NovaDev404/NexStore/releases/download/v1.0.0/NexStore.ipa"
+        }
+      ]
+    }
   ],
-  "news": [
-  ]
+  "news": []
 }
