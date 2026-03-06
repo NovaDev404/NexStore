@@ -13,8 +13,9 @@ jobs:
         with:
           ref: main
 
-      - name: Update app-repo.json
+      - name: Set GitHub Token and Update app-repo.json
         run: |
+          export GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}"
           ./update-repo.sh
 
       - name: Commit changes
