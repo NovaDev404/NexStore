@@ -6,29 +6,45 @@ handle_error() {
   exit 1
 }
 
-echo "Fetching latest release data from GitHub..."
-
 REPO="NovaDev404/NexStore"
 API_URL="https://api.github.com/repos/$REPO/releases/latest"
 
-# Retry fetch because GitHub sometimes delays asset indexing
+echo "Fetching latest release data from GitHub..."
+
 attempt=1
-max_attempts=5
+max_attempts=10
 release_info=""
 
 while [ $attempt -le $max_attempts ]; do
   echo "Attempt $attempt to fetch release info..."
 
-  release_info=$(curl -s "$API_URL")
+  release_info=$(curl -s \
+    -H "Accept: application/vnd.github+json" \
+    -H "User-Agent: NexStore-Repo-Updater" \
+    "$API_URL")
 
-  assets_count=$(echo "$release_info" | jq '.assets | length')
+  if [ -z "$release_info" ]; then
+    echo "Empty response from API"
+  else
+    api_message=$(echo "$release_info" | jq -r '.message // empty')
 
-  if [ "$assets_count" -gt 0 ]; then
-    break
+    if [ -n "$api_message" ]; then
+      echo "GitHub API message: $api_message"
+    else
+      assets_count=$(echo "$release_info" | jq '(.assets // []) | length')
+
+      if [ "$assets_count" -gt 0 ]; then
+        echo "Assets detected."
+        break
+      fi
+    fi
   fi
 
-  echo "No assets found yet, retrying in 5 seconds..."
-  sleep 5
+  if [ $attempt -lt $max_attempts ]; then
+    echo "No assets found yet, retrying in 5 seconds..."
+    sleep 5
+  fi
+
   attempt=$((attempt + 1))
 done
 
@@ -41,11 +57,11 @@ echo "Release version: $version"
 echo "Updated at: $updated_at"
 
 echo "Assets found:"
-echo "$clean_release_info" | jq -r '.assets[].name'
+echo "$clean_release_info" | jq -r '(.assets // [])[]?.name'
 
 ipa_files=$(echo "$clean_release_info" | jq '
 [
-  .assets[]?
+  (.assets // [])[]
   | select((.name | endswith(".ipa")) or (.name | endswith(".tipa")))
   | {
       name: .name,
@@ -56,7 +72,7 @@ ipa_files=$(echo "$clean_release_info" | jq '
 
 if [ "$(echo "$ipa_files" | jq 'length')" -gt 0 ]; then
 
-  echo "Found IPA/TIPA files:"
+  echo "Found IPA/TIPA files in release:"
   echo "$ipa_files" | jq -r '.[] | "• \(.name) (\(.size) bytes)"'
 
   JSON_FILE="app-repo.json"
@@ -78,17 +94,13 @@ if [ "$(echo "$ipa_files" | jq 'length')" -gt 0 ]; then
     matching_file=""
 
     if echo "$app_name" | grep -i "idevice" > /dev/null; then
-
       matching_file=$(echo "$ipa_files" | jq '
         map(select((.name | endswith(".tipa")) or (.name | test("idevice"; "i"))))
         | first')
-
     else
-
       matching_file=$(echo "$ipa_files" | jq '
         map(select((.name | endswith(".ipa")) and (.name | test("idevice"; "i") | not)))
         | first')
-
     fi
 
     if [ "$matching_file" = "null" ] || [ -z "$matching_file" ]; then
