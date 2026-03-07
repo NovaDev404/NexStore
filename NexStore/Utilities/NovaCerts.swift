@@ -8,8 +8,6 @@
 import Foundation
 
 enum NovaCerts {
-	static let autoSyncDefaultsKey = "NexStore.autoSyncNovaCertsLocally"
-	private static let _syncedCertificateIDsDefaultsKey = "NexStore.syncedNovaCertIDs"
 	static let readmeURL = URL(string: "https://raw.githubusercontent.com/NovaDev404/NovaCerts/refs/heads/main/README.md")!
 	private static let _rawBaseURL = "https://github.com/NovaDev404/NovaCerts/raw/refs/heads/main"
 	private static let _pathComponentAllowedCharacters: CharacterSet = {
@@ -189,7 +187,7 @@ extension NovaCerts {
 
 			entries.append(
 				CatalogItem(
-					id: company,
+					id: "\(entries.count)-\(company)",
 					name: company,
 					certificateType: type,
 					status: Status(markdownValue: statusText),
@@ -293,7 +291,6 @@ extension NovaCerts {
 					if let error {
 						continuation.resume(throwing: error)
 					} else {
-						_markSyncedCertificateIDs([certificate.id])
 						continuation.resume(returning: ())
 					}
 				}
@@ -302,76 +299,6 @@ extension NovaCerts {
 			try? fileManager.removeFileIfNeeded(at: temporaryDirectory)
 			throw error
 		}
-	}
-}
-
-// MARK: - Auto Sync
-extension NovaCerts {
-	static func autoSyncIfEnabled() async {
-		guard UserDefaults.standard.bool(forKey: autoSyncDefaultsKey) else {
-			return
-		}
-
-		do {
-			_ = try await syncNewCertificatesLocally()
-		} catch {
-			return
-		}
-	}
-
-	static func syncNewCertificatesLocally() async throws -> [CatalogItem] {
-		let catalog = try await fetchCatalog()
-		let certificates = catalog.flatMap(\.certificates)
-		var syncedIDs = _syncedCertificateIDs()
-		var localNames = await MainActor.run {
-			_existingLocalCertificateNames()
-		}
-		var importedCertificates: [CatalogItem] = []
-
-		for certificate in certificates {
-			if syncedIDs.contains(certificate.id) {
-				continue
-			}
-
-			if localNames.contains(certificate.name) {
-				syncedIDs.insert(certificate.id)
-				continue
-			}
-
-			do {
-				try await importCertificate(certificate)
-				importedCertificates.append(certificate)
-				localNames.insert(certificate.name)
-				syncedIDs.insert(certificate.id)
-			} catch {
-				continue
-			}
-		}
-
-		_markSyncedCertificateIDs(Array(syncedIDs))
-		return importedCertificates
-	}
-
-	@MainActor
-	private static func _existingLocalCertificateNames() -> Set<String> {
-		let certificates = Storage.shared.getAllCertificates()
-
-		return Set(
-			certificates.compactMap { certificate in
-				if let nickname = certificate.nickname?.trimmingCharacters(in: .whitespacesAndNewlines), !nickname.isEmpty {
-					return nickname
-				}
-
-				let provisionName = Storage.shared.getProvisionFileDecoded(for: certificate)?.Name?
-					.trimmingCharacters(in: .whitespacesAndNewlines)
-
-				if let provisionName, !provisionName.isEmpty {
-					return provisionName
-				}
-
-				return nil
-			}
-		)
 	}
 }
 
@@ -402,15 +329,6 @@ extension NovaCerts {
 
 // MARK: - Helpers
 extension NovaCerts {
-	private static func _syncedCertificateIDs() -> Set<String> {
-		Set(UserDefaults.standard.stringArray(forKey: _syncedCertificateIDsDefaultsKey) ?? [])
-	}
-
-	private static func _markSyncedCertificateIDs(_ ids: [String]) {
-		let mergedIDs = _syncedCertificateIDs().union(ids)
-		UserDefaults.standard.set(Array(mergedIDs).sorted(), forKey: _syncedCertificateIDsDefaultsKey)
-	}
-
 	private static func _encodePathComponent(_ value: String) -> String {
 		value.addingPercentEncoding(withAllowedCharacters: _pathComponentAllowedCharacters) ?? value
 	}
