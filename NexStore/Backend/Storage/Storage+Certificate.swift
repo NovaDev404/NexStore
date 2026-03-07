@@ -30,13 +30,17 @@ extension Storage {
 		new.expiration = expiration
 		new.nickname = nickname
 		new.isDefault = isDefault
+		new.revoked = false
 		Storage.shared.revokagedCertificate(for: new)
+		CertificateStatusManager.shared.refreshAppleStatus(for: new)
 		saveContext()
 		generator.impactOccurred()
 		completion(nil)
 	}
 	
 	func deleteCertificate(for cert: CertificatePair) {
+		CertificateStatusManager.shared.removeAppleStatus(for: cert)
+
 		if let url = getUuidDirectory(for: cert) {
 			try? FileManager.default.removeItem(at: url)
 		}
@@ -58,19 +62,24 @@ extension Storage {
 		return results[index]
 	}
 	
-	func revokagedCertificate(for cert: CertificatePair) {
-		guard !cert.revoked else { return }
-		
+	func revokagedCertificate(for cert: CertificatePair, completion: ((Bool) -> Void)? = nil) {
+		guard
+			let provisionPath = Storage.shared.getFile(.provision, from: cert)?.path,
+			let p12Path = Storage.shared.getFile(.certificate, from: cert)?.path
+		else {
+			completion?(cert.revoked == true)
+			return
+		}
+
 		Zsign.checkRevokage(
-			provisionPath: Storage.shared.getFile(.provision, from: cert)?.path ?? "",
-			p12Path: Storage.shared.getFile(.certificate, from: cert)?.path ?? "",
+			provisionPath: provisionPath,
+			p12Path: p12Path,
 			p12Password: cert.password ?? ""
 		) { (status, _, _) in
-			if status == 1 {
-				DispatchQueue.main.async {
-					cert.revoked = true
-					self.saveContext()
-				}
+			DispatchQueue.main.async {
+				cert.revoked = (status == 1)
+				self.saveContext()
+				completion?(cert.revoked == true)
 			}
 		}
 	}

@@ -164,8 +164,8 @@ extension CertificatesView {
 			_isSelectedInfoPresenting = cert
 		}
 		Divider()
-		Button(.localized("Check Revokage"), systemImage: "person.text.rectangle") {
-			Storage.shared.revokagedCertificate(for: cert)
+		Button(.localized("Refresh Statuses"), systemImage: "arrow.clockwise") {
+			CertificateStatusManager.shared.refreshStatuses(for: cert)
 		}
 	}
 }

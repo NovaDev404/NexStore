@@ -140,7 +140,7 @@ extension OfficialCertificatesView {
 			_rowContent(
 				title: certificate.name,
 				subtitle: certificate.subtitle,
-				statusText: certificate.rawStatusText,
+				statusText: certificate.status.title,
 				status: certificate.status,
 				isImporting: _importingCertificateID == certificate.id
 			)
@@ -184,17 +184,13 @@ extension OfficialCertificatesView {
 
 	private func _statusBadge(text: String, status: NovaCerts.Status) -> some View {
 		let color = _statusColor(for: status)
-		let icon = _statusIcon(for: status)
 
-		return HStack(spacing: 6) {
-			Image(systemName: icon)
-			Text(text)
-		}
-		.font(.footnote.weight(.semibold))
-		.foregroundStyle(color)
-		.padding(.horizontal, 10)
-		.padding(.vertical, 6)
-		.background(color.opacity(0.12), in: Capsule())
+		return Text(text)
+			.font(.footnote.weight(.semibold))
+			.foregroundStyle(color)
+			.padding(.horizontal, 10)
+			.padding(.vertical, 6)
+			.background(color.opacity(0.12), in: Capsule())
 	}
 
 	private func _statusColor(for status: NovaCerts.Status) -> Color {
@@ -208,16 +204,6 @@ extension OfficialCertificatesView {
 		}
 	}
 
-	private func _statusIcon(for status: NovaCerts.Status) -> String {
-		switch status {
-		case .signed:
-			return "checkmark.seal"
-		case .revoked:
-			return "xmark.octagon"
-		case .unknown:
-			return "questionmark.circle"
-		}
-	}
 }
 
 // MARK: - Actions

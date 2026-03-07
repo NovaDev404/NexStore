@@ -13,6 +13,7 @@ import ZsignSwift
 struct CertificatesInfoView: View {
 	@Environment(\.dismiss) var dismiss
 	@State var data: Certificate?
+	@ObservedObject private var statusManager = CertificateStatusManager.shared
 	
 	var cert: CertificatePair
 	
@@ -44,14 +45,27 @@ struct CertificatesInfoView: View {
 				NBToolbarButton(role: .close)
 			}
 		}
-		.onAppear {
+		.task(id: cert.uuid ?? cert.objectID.uriRepresentation().absoluteString) {
 			data = Storage.shared.getProvisionFileDecoded(for: cert)
+			statusManager.refreshStatuses(for: cert)
 		}
     }
 }
 
 // MARK: - Extension: View
 extension CertificatesInfoView {
+	private var _deviceStatus: CertificateStatusValue {
+		CertificateStatusValue.deviceStatus(for: cert)
+	}
+
+	private var _appleStatusSnapshot: CertificateAppleStatusSnapshot? {
+		statusManager.appleStatus(for: cert)
+	}
+
+	private var _appleStatus: CertificateStatusValue {
+		_appleStatusSnapshot?.status ?? .unknown
+	}
+
 	@ViewBuilder
 	private func _infoSection(data: Certificate) -> some View {
 		NBSection(.localized("Info")) {
@@ -63,8 +77,20 @@ extension CertificatesInfoView {
 		Section {
 			_info(.localized("Expires"), description: data.ExpirationDate.expirationInfo().formatted)
 				.foregroundStyle(data.ExpirationDate.expirationInfo().color)
-			
-			_info(.localized("Revoked"), description: cert.revoked ? "✓" : "✗")
+
+			_statusInfo(
+				.localized("Device Status"),
+				status: _deviceStatus,
+				description: _deviceStatus.title,
+				isRefreshing: statusManager.isRefreshingDeviceStatus(for: cert)
+			)
+
+			_statusInfo(
+				.localized("Apple Status"),
+				status: _appleStatus,
+				description: _appleStatusSnapshot?.displayTitle ?? _appleStatus.title,
+				isRefreshing: statusManager.isRefreshingAppleStatus(for: cert)
+			)
 			
 			if let ppq = data.PPQCheck {
 				_info(.localized("PPQCheck"), description: ppq ? "✓" : "✗")
@@ -110,6 +136,28 @@ extension CertificatesInfoView {
 			Text(description)
 		}
 		.copyableText(description)
+	}
+
+	@ViewBuilder
+	private func _statusInfo(
+		_ title: String,
+		status: CertificateStatusValue,
+		description: String,
+		isRefreshing: Bool
+	) -> some View {
+		let icon = isRefreshing ? "arrow.clockwise" : status.icon
+		let color = isRefreshing ? Color.secondary : status.color
+		let statusText = isRefreshing ? .localized("Checking") : description
+
+		LabeledContent(title) {
+			HStack(spacing: 6) {
+				Image(systemName: icon)
+					.foregroundStyle(color)
+				Text(statusText)
+					.foregroundStyle(color)
+			}
+		}
+		.copyableText(statusText)
 	}
 	
 	@ViewBuilder

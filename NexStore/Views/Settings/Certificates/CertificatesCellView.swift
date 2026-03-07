@@ -13,10 +13,11 @@ struct CertificatesCellView: View {
 	@State var data: Certificate?
 	
 	@ObservedObject var cert: CertificatePair
+	@ObservedObject private var statusManager = CertificateStatusManager.shared
 	
 	// MARK: Body
 	var body: some View {
-		VStack(spacing: 6) {
+		VStack(alignment: .leading, spacing: 8) {
 			let title = {
 				var title = cert.nickname ?? data?.Name ?? .localized("Unknown")
 				
@@ -34,13 +35,16 @@ struct CertificatesCellView: View {
 			
 			_certInfoPill(data: cert)
 		}
-		.frame(height: 80)
+		.frame(minHeight: 104)
 		.contentTransition(.opacity)
 		.frame(maxWidth: .infinity, alignment: .leading)
 		.onAppear {
 			withAnimation {
 				data = Storage.shared.getProvisionFileDecoded(for: cert)
 			}
+		}
+		.task(id: cert.uuid ?? cert.objectID.uriRepresentation().absoluteString) {
+			statusManager.refreshAppleStatusIfNeeded(for: cert)
 		}
 	}
 }
@@ -49,7 +53,20 @@ struct CertificatesCellView: View {
 extension CertificatesCellView {
 	@ViewBuilder
 	private func _certInfoPill(data: CertificatePair) -> some View {
-		let pillItems = _buildPills(from: data)
+		let statusPills = _buildStatusPills(from: data)
+		let metadataPills = _buildMetadataPills(from: data)
+
+		VStack(spacing: 6) {
+			_pillRow(statusPills)
+
+			if !metadataPills.isEmpty {
+				_pillRow(metadataPills)
+			}
+		}
+	}
+	
+	@ViewBuilder
+	private func _pillRow(_ pillItems: [NBPillItem]) -> some View {
 		HStack(spacing: 6) {
 			ForEach(pillItems.indices, id: \.hashValue) { index in
 				let pill = pillItems[index]
@@ -63,18 +80,32 @@ extension CertificatesCellView {
 			}
 		}
 	}
-	
-	private func _buildPills(from cert: CertificatePair) -> [NBPillItem] {
+
+	private func _buildStatusPills(from cert: CertificatePair) -> [NBPillItem] {
+		let deviceStatus = CertificateStatusValue.deviceStatus(for: cert)
+		let appleStatus = statusManager.appleStatus(for: cert)?.status ?? .unknown
+
+		return [
+			_statusPill(
+				prefix: .localized("Device"),
+				status: deviceStatus,
+				isRefreshing: statusManager.isRefreshingDeviceStatus(for: cert)
+			),
+			_statusPill(
+				prefix: .localized("Apple"),
+				status: appleStatus,
+				isRefreshing: statusManager.isRefreshingAppleStatus(for: cert)
+			)
+		]
+	}
+
+	private func _buildMetadataPills(from cert: CertificatePair) -> [NBPillItem] {
 		var pills: [NBPillItem] = []
-		
+
 		if cert.ppQCheck == true {
 			pills.append(NBPillItem(title: .localized("PPQCheck"), icon: "checkmark.shield", color: .red))
 		}
-		
-		if cert.revoked == true {
-			pills.append(NBPillItem(title: .localized("Revoked"), icon: "xmark.octagon", color: .red))
-		}
-		
+
 		if let info = cert.expiration?.expirationInfo() {
 			pills.append(NBPillItem(
 				title: info.formatted,
@@ -84,5 +115,17 @@ extension CertificatesCellView {
 		}
 		
 		return pills
+	}
+
+	private func _statusPill(prefix: String, status: CertificateStatusValue, isRefreshing: Bool) -> NBPillItem {
+		let title = isRefreshing
+		? "\(prefix) \(.localized("Checking"))"
+		: "\(prefix) \(status.title)"
+
+		return NBPillItem(
+			title: title,
+			icon: isRefreshing ? "arrow.clockwise" : status.icon,
+			color: isRefreshing ? .secondary : status.color
+		)
 	}
 }
