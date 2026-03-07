@@ -6,6 +6,8 @@ on:
 jobs:
   build:
     runs-on: macos-26
+    env:
+      TMPDIR: ${{ runner.temp }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
