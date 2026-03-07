@@ -13,6 +13,7 @@ This app allows you to install and manage applications contained in a single app
 - User friendly, and clean UI.
 - Sign and install applications.
 - Supports [AltStore](https://faq.altstore.io/distribute-your-apps/make-a-source#apps) repositories.
+- Supports [NovaDNS Dynamic](https://novadev.vip/resources/dns/)!
 - View detailed information about apps and your certificates.
 - Configurable signing options mainly for modifying the app, such as appearance and allowing support for the files app.
   - This includes patching apps for compatibility and Liquid Glass.
@@ -50,7 +51,7 @@ Visit the [HOW IT WORKS](./HOW_IT_WORKS.md) page.
 ## Acknowledgements
 
 - [Samara](https://github.com/claration) - The maker of Feather.
-- [NovaDev404](https://github.com/NovaDev404) - Maker of NexStore.
+- [NovaDev404](https://github.com/NovaDev404) - Developer of NexStore.
 - [idevice](https://github.com/jkcoxson/idevice) - Backend for builds with this included, used for communication with `installd`.
 - [*.backloop.dev](https://backloop.dev/) - localhost with public CA signed SSL certificate
 - [Vapor](https://github.com/vapor/vapor) - A server-side Swift HTTP web framework.
@@ -65,5 +66,3 @@ Visit the [HOW IT WORKS](./HOW_IT_WORKS.md) page.
 This project is licensed under the GPL-3.0 license. You can see the full details of the license [here](https://github.com/NovaDev404/NexStore/blob/main/LICENSE). It's under this specific license because I wanted to make a project that is transparent to the user thats related to certificate paired sideloading, before this project there weren't any open source projects that filled in this gap.
 
 By contributing to this project, you agree to license your code under the GPL-3.0 license as well (including agreeing to license exceptions), ensuring that your work, like all other contributions, remains freely accessible and open.
-
-
