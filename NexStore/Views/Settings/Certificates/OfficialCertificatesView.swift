@@ -17,14 +17,14 @@ struct OfficialCertificatesView: View {
 	@State private var _errorMessage: String?
 	@State private var _hasLoaded = false
 	@State private var _isImporting = false
-	@State private var _isLoading = true
+	@State private var _isLoading = false
 	@State private var _importingCertificateID: String?
 
 	// MARK: Body
 	var body: some View {
 		NBNavigationView(.localized("Official Certificates"), displayMode: .inline) {
 			Group {
-				if _isLoading {
+				if _isLoading || !_hasLoaded {
 					_loadingView
 				} else if let errorMessage = _errorMessage {
 					_errorView(message: errorMessage)
