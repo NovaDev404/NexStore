@@ -12,11 +12,13 @@ import OSLog
 
 @main
 struct NexStoreApp: App {
+	@Environment(\.scenePhase) private var _scenePhase
 	@UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 	
 	let heartbeat = HeartbeatManager.shared
 	
 	@StateObject var downloadManager = DownloadManager.shared
+	@State private var _isAutoSyncingNovaCerts = false
 	let storage = Storage.shared
 	
 	var body: some Scene {
@@ -46,7 +48,33 @@ struct NexStoreApp: App {
 				
 				UIApplication.topViewController()?.view.window?.tintColor = UIColor(Color(hex: UserDefaults.standard.string(forKey: "NexStore.userTintColor") ?? "#1E4ED8"))
 			}
+			.task {
+				await _startNovaCertAutoSyncIfNeeded()
+			}
+			.onChange(of: _scenePhase) { newPhase in
+				guard newPhase == .active else { return }
+				Task {
+					await _startNovaCertAutoSyncIfNeeded()
+				}
+			}
 		}
+	}
+
+	@MainActor
+	private func _startNovaCertAutoSyncIfNeeded() async {
+		guard
+			UserDefaults.standard.bool(forKey: NovaCerts.autoSyncDefaultsKey),
+			!_isAutoSyncingNovaCerts
+		else {
+			return
+		}
+
+		_isAutoSyncingNovaCerts = true
+		defer {
+			_isAutoSyncingNovaCerts = false
+		}
+
+		await NovaCerts.autoSyncIfEnabled()
 	}
 	
 	private func _handleURL(_ url: URL) {
