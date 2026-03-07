@@ -1,6 +1,6 @@
 [submodule "Zsign"]
 	path = Zsign
-	url = https://github.com/NovaDev404/Zsign-Package
+	url = https://github.com/NovaDev404/Zsign-Package.git
 	branch = package
 [submodule "IDeviceKitten"]
 	path = IDeviceKitten
