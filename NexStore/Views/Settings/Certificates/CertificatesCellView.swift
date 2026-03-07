@@ -119,7 +119,7 @@ extension CertificatesCellView {
 
 	private func _statusPill(prefix: String, status: CertificateStatusValue, isRefreshing: Bool) -> NBPillItem {
 		let title = isRefreshing
-		? "\(prefix) \(.localized("Checking"))"
+		? "\(prefix) \(String.localized("Checking"))"
 		: "\(prefix) \(status.title)"
 
 		return NBPillItem(
