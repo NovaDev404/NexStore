@@ -27,6 +27,7 @@ This app allows you to install and manage applications contained in a single app
 |  | NexStore | Feather |
 |:-----------|:--------:|:---------:|
 | **Dynamic DNS**   | ✅       | ❌        |
+| **Device thinks & Apple Status for Certs**   | ✅       | ❌        |
 - Many more features coming soon including Apple ID signing, JIT enabler, and more!
 
 ## Download
@@ -72,4 +73,5 @@ Visit the [HOW IT WORKS](./HOW_IT_WORKS.md) page.
 This project is licensed under the GPL-3.0 license. You can see the full details of the license [here](https://github.com/NovaDev404/NexStore/blob/main/LICENSE). It's under this specific license because I wanted to make a project that is transparent to the user thats related to certificate paired sideloading, before this project there weren't any open source projects that filled in this gap.
 
 By contributing to this project, you agree to license your code under the GPL-3.0 license as well (including agreeing to license exceptions), ensuring that your work, like all other contributions, remains freely accessible and open.
+
 
