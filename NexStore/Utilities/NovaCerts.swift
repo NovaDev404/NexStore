@@ -29,7 +29,7 @@ enum NovaCerts {
 		var subtitle: String {
 			var components = [certificateType]
 			if !validTo.isEmpty {
-				components.append("Valid To: \(validTo)")
+				components.append(String.localized("Valid To: %@", arguments: validTo))
 			}
 			return components.joined(separator: " • ")
 		}
@@ -93,11 +93,11 @@ enum NovaCerts {
 		var title: String {
 			switch self {
 			case .signed:
-				"Signed"
+				String.localized("Signed")
 			case .revoked:
-				"Revoked"
+				String.localized("Revoked")
 			case .unknown:
-				"Unknown"
+				String.localized("Unknown")
 			}
 		}
 
@@ -123,13 +123,13 @@ enum NovaCerts {
 		var errorDescription: String? {
 			switch self {
 			case .invalidResponse(let url):
-				"Failed to fetch \(url.absoluteString)."
+				String.localized("Failed to fetch %@.", arguments: url.absoluteString)
 			case .invalidReadmeData:
-				"The NovaCerts README could not be parsed."
+				String.localized("The NovaCerts README could not be parsed.")
 			case .emptyCatalog:
-				"NovaCerts did not return any certificates."
+				String.localized("NovaCerts did not return any certificates.")
 			case .invalidPassword:
-				"The downloaded NovaCert certificate password is invalid."
+				String.localized("The downloaded NovaCert certificate password is invalid.")
 			}
 		}
 	}
@@ -228,8 +228,8 @@ extension NovaCerts {
 				sections.append(
 					CatalogSection(
 						id: "group-\(baseName)",
-						title: "\(baseName) - \(sortedBucket.count) Versions",
-						subtitle: "\(sortedBucket.count) versions available",
+						title: String.localized("%@ - %lld Versions", arguments: baseName, Int64(sortedBucket.count)),
+						subtitle: String.localized("%lld versions available", arguments: Int64(sortedBucket.count)),
 						status: Status.aggregate(sortedBucket.map(\.status)),
 						certificates: sortedBucket
 					)

@@ -296,7 +296,7 @@ private enum CertificateStatusError: LocalizedError {
 	var errorDescription: String? {
 		switch self {
 		case .invalidResponse:
-			"The Apple certificate status check failed."
+			String.localized("The Apple certificate status check failed.")
 		}
 	}
 }

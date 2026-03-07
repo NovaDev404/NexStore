@@ -84,17 +84,25 @@ extension CertificatesCellView {
 	private func _buildStatusPills(from cert: CertificatePair) -> [NBPillItem] {
 		let deviceStatus = CertificateStatusValue.deviceStatus(for: cert)
 		let appleStatus = statusManager.appleStatus(for: cert)?.status ?? .unknown
+		let isRefreshingDeviceStatus = statusManager.isRefreshingDeviceStatus(for: cert)
+		let isRefreshingAppleStatus = statusManager.isRefreshingAppleStatus(for: cert)
 
 		return [
 			_statusPill(
-				prefix: .localized("Device"),
+				title: String.localized(
+					"Device %@",
+					arguments: isRefreshingDeviceStatus ? String.localized("Checking") : deviceStatus.title
+				),
 				status: deviceStatus,
-				isRefreshing: statusManager.isRefreshingDeviceStatus(for: cert)
+				isRefreshing: isRefreshingDeviceStatus
 			),
 			_statusPill(
-				prefix: .localized("Apple"),
+				title: String.localized(
+					"Apple %@",
+					arguments: isRefreshingAppleStatus ? String.localized("Checking") : appleStatus.title
+				),
 				status: appleStatus,
-				isRefreshing: statusManager.isRefreshingAppleStatus(for: cert)
+				isRefreshing: isRefreshingAppleStatus
 			)
 		]
 	}
@@ -117,11 +125,7 @@ extension CertificatesCellView {
 		return pills
 	}
 
-	private func _statusPill(prefix: String, status: CertificateStatusValue, isRefreshing: Bool) -> NBPillItem {
-		let title = isRefreshing
-		? "\(prefix) \(String.localized("Checking"))"
-		: "\(prefix) \(status.title)"
-
+	private func _statusPill(title: String, status: CertificateStatusValue, isRefreshing: Bool) -> NBPillItem {
 		return NBPillItem(
 			title: title,
 			icon: isRefreshing ? "arrow.clockwise" : status.icon,

@@ -79,7 +79,7 @@ extension CertificatesInfoView {
 				.foregroundStyle(data.ExpirationDate.expirationInfo().color)
 
 			_statusInfo(
-				.localized("Device Status"),
+				.localized("Device thinks this certificate is"),
 				status: _deviceStatus,
 				description: _deviceStatus.title,
 				isRefreshing: statusManager.isRefreshingDeviceStatus(for: cert)
