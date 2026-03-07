@@ -8,11 +8,19 @@
 import SwiftUI
 import NimbleViews
 
+private enum CertificateAddSheet: String, Identifiable {
+	case certificateFiles
+	case official
+
+	var id: String { rawValue }
+}
+
 // MARK: - View
 struct CertificatesView: View {
 	@AppStorage("nexstore.selectedCert") private var _storedSelectedCert: Int = 0
 	
-	@State private var _isAddingPresenting = false
+	@State private var _isAddOptionsPresenting = false
+	@State private var _addSheet: CertificateAddSheet?
 	@State private var _isSelectedInfoPresenting: CertificatePair?
 
 	// MARK: Fetch
@@ -49,7 +57,7 @@ struct CertificatesView: View {
 						Text(.localized("Get started signing by importing your first certificate."))
 					} actions: {
 						Button {
-							_isAddingPresenting = true
+							_presentAddOptions()
 						} label: {
 							NBButton(.localized("Import"), style: .text)
 						}
@@ -64,22 +72,46 @@ struct CertificatesView: View {
 					style: .icon,
 					placement: .topBarTrailing
 				) {
-					_isAddingPresenting = true
+					_presentAddOptions()
 				}
 			}
+		}
+		.confirmationDialog(.localized("Add Certificate"), isPresented: $_isAddOptionsPresenting, titleVisibility: .visible) {
+			Button(.localized("Official (NovaCerts)")) {
+				_addSheet = .official
+			}
+			Button(.localized("Certificate Files")) {
+				_addSheet = .certificateFiles
+			}
+			Button(.localized("Cancel"), role: .cancel) {}
 		}
 		.sheet(item: $_isSelectedInfoPresenting) { cert in
 			CertificatesInfoView(cert: cert)
 		}
-		.sheet(isPresented: $_isAddingPresenting) {
-			CertificatesAddView()
-				.presentationDetents([.medium])
+		.sheet(item: $_addSheet) { sheet in
+			_addSheetView(for: sheet)
 		}
 	}
 }
 
 // MARK: - View extension
 extension CertificatesView {
+	private func _presentAddOptions() {
+		_isAddOptionsPresenting = true
+	}
+
+	@ViewBuilder
+	private func _addSheetView(for sheet: CertificateAddSheet) -> some View {
+		switch sheet {
+		case .certificateFiles:
+			CertificatesAddView()
+				.presentationDetents([.medium])
+		case .official:
+			OfficialCertificatesView()
+				.presentationDetents([.large])
+		}
+	}
+
 	@ViewBuilder
 	private func _cellButton(for cert: CertificatePair, at index: Int) -> some View {
 		let cornerRadius = {
