@@ -14,6 +14,7 @@ import IDeviceSwift
 // MARK: - View
 struct SettingsView: View {
 	@AppStorage("nexstore.selectedCert") private var _storedSelectedCert: Int = 0
+    @StateObject private var _appleIDManager = AppleIDSessionManager.shared
     @State private var _currentIcon: String? = UIApplication.shared.alternateIconName
 	
 	// MARK: Fetch
@@ -63,6 +64,30 @@ struct SettingsView: View {
                  
                 } footer: {
                     Text(.localized("Add and manage certificates used for signing applications."))
+                }
+
+                NBSection(.localized("Apple ID")) {
+                    if _appleIDManager.savedAppleID.isEmpty {
+                        Text(.localized("No Apple ID Configured"))
+                            .font(.footnote)
+                            .foregroundColor(.disabled())
+                    } else {
+                        LabeledContent(.localized("Account")) {
+                            Text(_appleIDManager.savedAppleID)
+                        }
+
+                        if let teamName = _appleIDManager.selectedTeamName {
+                            LabeledContent(.localized("Team")) {
+                                Text(teamName)
+                            }
+                        }
+                    }
+
+                    NavigationLink(destination: AppleIDSettingsView()) {
+                        Label(.localized("Apple ID"), systemImage: "person.crop.circle.badge.checkmark")
+                    }
+                } footer: {
+                    Text(.localized("Configure Apple ID signing, saved credentials, and the anisette server used for Apple ID signing."))
                 }
                 
                 NBSection(.localized("Options")) {

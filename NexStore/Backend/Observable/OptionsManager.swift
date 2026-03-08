@@ -174,6 +174,19 @@ struct Options: Codable, Equatable {
 		}
 	}
 
+		enum SigningMethod: String, Codable, CaseIterable, LocalizedDescribable {
+			case certificate
+			case appleID
+
+			var localizedDescription: String {
+				switch self {
+				case .certificate:
+					return .localized("Certificate")
+				case .appleID:
+					return .localized("Apple ID")
+				}
+			}
+		}
 	enum MinimumAppRequirement: String, Codable, CaseIterable, LocalizedDescribable {
 		case `default`
 		case v16 = "16.0"

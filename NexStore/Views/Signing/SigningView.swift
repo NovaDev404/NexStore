@@ -13,9 +13,12 @@ import NimbleViews
 struct SigningView: View {
 	@Environment(\.dismiss) var dismiss
 	@StateObject private var _optionsManager = OptionsManager.shared
+	@StateObject private var _appleIDManager = AppleIDSessionManager.shared
+	@AppStorage("NexStore.installationMethod") private var _installationMethod: Int = 0
 	
 	@State private var _temporaryOptions: Options = OptionsManager.shared.options
 	@State private var _temporaryCertificate: Int
+	@State private var _signingMethod: Options.SigningMethod
 	@State private var _isAltPickerPresenting = false
 	@State private var _isFilePickerPresenting = false
 	@State private var _isImagePickerPresenting = false
@@ -40,7 +43,11 @@ struct SigningView: View {
 	init(app: AppInfoPresentable) {
 		self.app = app
 		let storedCert = UserDefaults.standard.integer(forKey: "nexstore.selectedCert")
+		let storedSigningMethod = Options.SigningMethod(
+			rawValue: UserDefaults.standard.string(forKey: "NexStore.signingMethod") ?? ""
+		) ?? .certificate
 		__temporaryCertificate = State(initialValue: storedCert)
+		__signingMethod = State(initialValue: storedSigningMethod)
 	}
 		
 	// MARK: Body
@@ -118,14 +125,16 @@ struct SigningView: View {
 			}
 			.disabled(_isSigning)
 			.animation(.smooth, value: _isSigning)
+			.onChange(of: _signingMethod) { newValue in
+				UserDefaults.standard.set(newValue.rawValue, forKey: "NexStore.signingMethod")
+			}
 		}
 		.onAppear {
 			// ppq protection
 			if
 				_optionsManager.options.ppqProtection,
 				let identifier = app.identifier,
-				let cert = _selectedCert(),
-				cert.ppQCheck
+				(_signingMethod == .appleID || _selectedCert()?.ppQCheck == true)
 			{
 				_temporaryOptions.appIdentifier = "\(identifier).\(_optionsManager.options.ppqString)"
 			}
@@ -192,18 +201,51 @@ extension SigningView {
 	@ViewBuilder
 	private func _cert() -> some View {
 		NBSection(.localized("Signing")) {
-			if let cert = _selectedCert() {
-				NavigationLink {
-					CertificatesView(selectedCert: $_temporaryCertificate)
-				} label: {
-					CertificatesCellView(
-						cert: cert
-					)
+			SigningOptionsView.picker(
+				.localized("Method"),
+				systemImage: "person.badge.key",
+				selection: $_signingMethod,
+				values: Options.SigningMethod.allCases
+			)
+
+			if _signingMethod == .certificate {
+				if let cert = _selectedCert() {
+					NavigationLink {
+						CertificatesView(selectedCert: $_temporaryCertificate)
+					} label: {
+						CertificatesCellView(
+							cert: cert
+						)
+					}
+				} else {
+					Text(.localized("No Certificate"))
+						.font(.footnote)
+						.foregroundColor(.disabled())
 				}
 			} else {
-				Text(.localized("No Certificate"))
-					.font(.footnote)
-					.foregroundColor(.disabled())
+				if _appleIDManager.savedAppleID.isEmpty {
+					Text(.localized("No Apple ID Configured"))
+						.font(.footnote)
+						.foregroundColor(.disabled())
+				} else {
+					LabeledContent(.localized("Account")) {
+						Text(_appleIDManager.savedAppleID)
+					}
+
+					if let teamName = _appleIDManager.selectedTeamName {
+						LabeledContent(.localized("Team")) {
+							Text(teamName)
+						}
+					}
+				}
+
+				NavigationLink(.localized("Manage Apple ID")) {
+					AppleIDSettingsView()
+				}
+			}
+		} footer: {
+			if _signingMethod == .appleID && _installationMethod != 1 {
+				Text(.localized("Apple ID-signed apps require the idevice installation method."))
 			}
 		}
 	}
@@ -264,9 +306,25 @@ extension SigningView {
 // MARK: - Extension: View (import)
 extension SigningView {
 	private func _start() {
-		guard
-			_selectedCert() != nil || _temporaryOptions.signingOption != .default
-		else {
+		if _signingMethod == .appleID {
+			guard _temporaryOptions.signingOption == .default else {
+				UIAlertController.showAlertWithOk(
+					title: .localized("Apple ID"),
+					message: .localized("Apple ID signing requires the Default signing type."),
+					isCancel: true
+				)
+				return
+			}
+
+			guard !_appleIDManager.savedAppleID.isEmpty else {
+				UIAlertController.showAlertWithOk(
+					title: .localized("Apple ID"),
+					message: .localized("Open Settings and sign in with your Apple ID before using Apple ID signing."),
+					isCancel: true
+				)
+				return
+			}
+		} else if _selectedCert() == nil && _temporaryOptions.signingOption == .default {
 			UIAlertController.showAlertWithOk(
 				title: .localized("No Certificate"),
 				message: .localized("Please go to settings and import a valid certificate"),
@@ -283,7 +341,8 @@ extension SigningView {
 			app,
 			using: _temporaryOptions,
 			icon: appIcon,
-			certificate: _selectedCert()
+			certificate: _signingMethod == .certificate ? _selectedCert() : nil,
+			signingMethod: _signingMethod
 		) { error in
 			if let error {
 				let ok = UIAlertAction(title: .localized("Dismiss"), style: .cancel) { _ in

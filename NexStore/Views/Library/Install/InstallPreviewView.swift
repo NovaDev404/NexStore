@@ -134,6 +134,14 @@ struct InstallPreviewView: View {
 	
 	private func _install() {
 		Task { @MainActor in
+			guard isSharing || !SignedAppMetadataManager.requiresIdeviceInstall(for: app) || _installationMethod == 1 else {
+				UIAlertController.showAlertWithOk(
+					title: "Install".localized,
+					message: .localized("Apple ID-signed apps require the idevice installation method.")
+				)
+				return
+			}
+
 			guard isSharing || app.identifier != Bundle.main.bundleIdentifier! || _installationMethod == 1 else {
 				UIAlertController.showAlertWithOk(
 					title: "Install".localized,

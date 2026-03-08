@@ -15689,6 +15689,380 @@
         }
       }
     },
+    "Anisette" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anisette"
+          }
+        }
+      }
+    },
+    "Anisette Server URL" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anisette Server URL"
+          }
+        }
+      }
+    },
+    "Apple ID" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple ID"
+          }
+        }
+      }
+    },
+    "Apple ID signing requires a signed-in Apple ID." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple ID signing requires a signed-in Apple ID."
+          }
+        }
+      }
+    },
+    "Apple ID signing requires the Default signing type." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple ID signing requires the Default signing type."
+          }
+        }
+      }
+    },
+    "Apple ID-signed apps require the idevice installation method." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple ID-signed apps require the idevice installation method."
+          }
+        }
+      }
+    },
+    "Authenticated" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authenticated"
+          }
+        }
+      }
+    },
+    "Configure Apple ID signing, saved credentials, and the anisette server used for Apple ID signing." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configure Apple ID signing, saved credentials, and the anisette server used for Apple ID signing."
+          }
+        }
+      }
+    },
+    "Enter the full anisette endpoint URL used to generate Apple authentication headers." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter the full anisette endpoint URL used to generate Apple authentication headers."
+          }
+        }
+      }
+    },
+    "Enter the verification code sent to your trusted device or phone number." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter the verification code sent to your trusted device or phone number."
+          }
+        }
+      }
+    },
+    "Enter your Apple ID email address." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter your Apple ID email address."
+          }
+        }
+      }
+    },
+    "Enter your anisette server URL before signing in." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter your anisette server URL before signing in."
+          }
+        }
+      }
+    },
+    "Enter your password or enable saved credentials." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter your password or enable saved credentials."
+          }
+        }
+      }
+    },
+    "Forget Apple ID" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Forget Apple ID"
+          }
+        }
+      }
+    },
+    "Manage Apple ID" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manage Apple ID"
+          }
+        }
+      }
+    },
+    "Method" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Method"
+          }
+        }
+      }
+    },
+    "Needs Sign In" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Needs Sign In"
+          }
+        }
+      }
+    },
+    "No Apple ID Configured" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Apple ID Configured"
+          }
+        }
+      }
+    },
+    "Open Settings and sign in with your Apple ID before using Apple ID signing." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Settings and sign in with your Apple ID before using Apple ID signing."
+          }
+        }
+      }
+    },
+    "Refresh Session" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Refresh Session"
+          }
+        }
+      }
+    },
+    "Save Credentials" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save Credentials"
+          }
+        }
+      }
+    },
+    "Saved Credentials" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saved Credentials"
+          }
+        }
+      }
+    },
+    "Session" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Session"
+          }
+        }
+      }
+    },
+    "Sign In" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign In"
+          }
+        }
+      }
+    },
+    "Sign in with your Apple ID to enable Apple ID signing. Two-factor authentication is supported during sign in." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign in with your Apple ID to enable Apple ID signing. Two-factor authentication is supported during sign in."
+          }
+        }
+      }
+    },
+    "Signing In…" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Signing In…"
+          }
+        }
+      }
+    },
+    "The anisette server did not return valid anisette data." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The anisette server did not return valid anisette data."
+          }
+        }
+      }
+    },
+    "The Apple ID signing certificate could not be stored." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Apple ID signing certificate could not be stored."
+          }
+        }
+      }
+    },
+    "The configured anisette server URL is invalid." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The configured anisette server URL is invalid."
+          }
+        }
+      }
+    },
+    "The current device UDID could not be determined." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The current device UDID could not be determined."
+          }
+        }
+      }
+    },
+    "The selected app could not be prepared for Apple ID signing." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The selected app could not be prepared for Apple ID signing."
+          }
+        }
+      }
+    },
+    "This Apple ID does not have any developer teams available." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This Apple ID does not have any developer teams available."
+          }
+        }
+      }
+    },
+    "Two-Factor Authentication" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Two-Factor Authentication"
+          }
+        }
+      }
+    },
+    "Verification Code" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verification Code"
+          }
+        }
+      }
+    },
     "The Apple certificate status check failed." : {
       "extractionState" : "manual",
       "localizations" : {

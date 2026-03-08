@@ -26,6 +26,7 @@ extension Storage {
 			if let url = getUuidDirectory(for: app) {
 				try? FileManager.default.removeItem(at: url)
 			}
+			SignedAppMetadataManager.removeMetadata(for: app.uuid)
 			if let object = app as? NSManagedObject {
 				context.delete(object)
 			}

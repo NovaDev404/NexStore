@@ -28,6 +28,8 @@ final class SigningHandler: NSObject {
 	// throw an error
 	var appIcon: UIImage?
 	var appCertificate: CertificatePair?
+	var signingMethod: Options.SigningMethod = .certificate
+	var appleIDContext: AppleIDSigningContext?
 	
 	init(app: AppInfoPresentable, options: Options = OptionsManager.shared.options) {
 		self._app = app
@@ -106,13 +108,17 @@ final class SigningHandler: NSObject {
 		let handler = ZsignHandler(appUrl: movedAppPath, options: _options, cert: appCertificate)
 		try await handler.disinject()
 		
-		if
+		if signingMethod == .appleID {
+			guard let appleIDContext else {
+				throw SigningFileHandlerError.missingCertifcate
+			}
+
+			try await AppleIDSigningCoordinator.sign(appAt: movedAppPath, context: appleIDContext)
+		} else if
 			_options.signingOption == .default,
 			appCertificate != nil
 		{
 			try await handler.sign()
-//		} else if _options.signingOption == .adhoc {
-//			try await handler.adhocSign()
 		} else if _options.signingOption == .onlyModify {
 			//
 		} else {
@@ -156,12 +162,21 @@ final class SigningHandler: NSObject {
 			
 			Storage.shared.addSigned(
 				uuid: _uuid,
-				certificate: _options.signingOption != .default ? nil : appCertificate,
+				certificate: signingMethod == .certificate && _options.signingOption == .default ? appCertificate : nil,
 				appName: bundle?.name,
 				appIdentifier: bundle?.bundleIdentifier,
 				appVersion: bundle?.version,
 				appIcon: bundle?.iconFileName
 			) { _ in
+				if self.signingMethod == .appleID {
+					SignedAppMetadataManager.setMetadata(
+						.init(signingMethod: .appleID, requiresIdeviceInstall: true),
+						for: self._uuid
+					)
+				} else {
+					SignedAppMetadataManager.removeMetadata(for: self._uuid)
+				}
+
 				Logger.signing.info("[\(self._uuid)] Added to database")
 				continuation.resume()
 			}

@@ -44,14 +44,20 @@ enum FR {
 		using options: Options,
 		icon: UIImage?,
 		certificate: CertificatePair?,
+		signingMethod: Options.SigningMethod = .certificate,
 		completion: @escaping (Error?) -> Void
 	) {
 		Task.detached {
-			let handler = SigningHandler(app: app, options: options)
-			handler.appCertificate = certificate
-			handler.appIcon = icon
-			
 			do {
+				let handler = SigningHandler(app: app, options: options)
+				handler.appCertificate = certificate
+				handler.appIcon = icon
+				handler.signingMethod = signingMethod
+
+				if signingMethod == .appleID {
+					handler.appleIDContext = try await AppleIDSessionManager.shared.requireSigningContext()
+				}
+			
 				try await handler.copy()
 				try await handler.modify()
 				try? await handler.clean()
@@ -66,7 +72,7 @@ enum FR {
 			}
 		}
 	}
-	
+
 	static func handleCertificateFiles(
 		p12URL: URL,
 		provisionURL: URL,
@@ -87,6 +93,7 @@ enum FR {
 			do {
 				try await handler.copy()
 				try await handler.addToDatabase()
+				try? await handler.clean()
 				await MainActor.run {
 					completion(nil)
 				}
