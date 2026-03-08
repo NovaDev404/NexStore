@@ -62,10 +62,13 @@ $(SCHEMES): prepare_packages
 		iphonesimulator) \
 			OPENSSL_FRAMEWORK="$$(find "$$ALT_SIGN_OPENSSL_XCFRAMEWORK" -path "*/OpenSSL.framework" -type d | grep -i simulator | head -n 1)" ;; \
 		*) \
-			# Prefer the pure ios-arm64 slice; avoid catalyst unless it's the only one left. \
-			OPENSSL_FRAMEWORK="$$(find "$$ALT_SIGN_OPENSSL_XCFRAMEWORK" -path "*/ios-arm64/OpenSSL.framework" -type d | head -n 1)"; \
+			# Prefer an iOS device slice; avoid maccatalyst unless nothing else exists. \
+			OPENSSL_FRAMEWORK="$$(find "$$ALT_SIGN_OPENSSL_XCFRAMEWORK" -path "*/ios-*/OpenSSL.framework" -type d | grep -vi simulator | grep -vi maccatalyst | head -n 1)"; \
 			if [ -z "$$OPENSSL_FRAMEWORK" ]; then \
-				OPENSSL_FRAMEWORK="$$(find "$$ALT_SIGN_OPENSSL_XCFRAMEWORK" -path "*/OpenSSL.framework" -type d | grep '/ios-' | grep -v -i simulator | grep -v -i maccatalyst | head -n 1)"; \
+				OPENSSL_FRAMEWORK="$$(find "$$ALT_SIGN_OPENSSL_XCFRAMEWORK" -path "*/OpenSSL.framework" -type d | grep -vi maccatalyst | head -n 1)"; \
+			fi; \
+			if [ -z "$$OPENSSL_FRAMEWORK" ]; then \
+				OPENSSL_FRAMEWORK="$$(find "$$ALT_SIGN_OPENSSL_XCFRAMEWORK" -path "*/OpenSSL.framework" -type d | head -n 1)"; \
 			fi; \
 		;; \
 	esac; \
@@ -89,6 +92,8 @@ $(SCHEMES): prepare_packages
 	    -clonedSourcePackagesDirPath "$(SOURCE_PACKAGES)" \
 	    -disableAutomaticPackageResolution \
 	    -skipPackagePluginValidation \
+	    HEADER_SEARCH_PATHS="$$OPENSSL_HEADERS" \
+	    SYSTEM_HEADER_SEARCH_PATHS="$$OPENSSL_HEADERS" \
 	    OTHER_CFLAGS="-I$$OPENSSL_HEADERS" \
 	    OTHER_CPLUSPLUSFLAGS="-I$$OPENSSL_HEADERS" \
 	    OTHER_LDFLAGS="-F$$OPENSSL_FRAMEWORK_DIR" \
