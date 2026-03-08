@@ -32,8 +32,7 @@ extension Storage {
 		new.nickname = nickname
 		new.isDefault = isDefault
 		new.revoked = false
-		Storage.shared.revokagedCertificate(for: new)
-		CertificateStatusManager.shared.refreshAppleStatus(for: new)
+		CertificateStatusManager.shared.refreshStatus(for: new)
 		saveContext()
 		generator.impactOccurred()
 		completion(nil)

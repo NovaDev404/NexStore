@@ -164,8 +164,8 @@ extension CertificatesView {
 			_isSelectedInfoPresenting = cert
 		}
 		Divider()
-		Button(.localized("Refresh Statuses"), systemImage: "arrow.clockwise") {
-			CertificateStatusManager.shared.refreshStatuses(for: cert)
+		Button(.localized("Refresh Status"), systemImage: "arrow.clockwise") {
+			CertificateStatusManager.shared.refreshStatus(for: cert)
 		}
 	}
 }

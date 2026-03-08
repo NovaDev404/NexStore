@@ -47,23 +47,19 @@ struct CertificatesInfoView: View {
 		}
 		.task(id: cert.uuid ?? cert.objectID.uriRepresentation().absoluteString) {
 			data = Storage.shared.getProvisionFileDecoded(for: cert)
-			statusManager.refreshStatuses(for: cert)
+			statusManager.refreshStatus(for: cert)
 		}
     }
 }
 
 // MARK: - Extension: View
 extension CertificatesInfoView {
-	private var _deviceStatus: CertificateStatusValue {
-		CertificateStatusValue.deviceStatus(for: cert)
+	private var _status: CertificateStatusValue {
+		statusManager.effectiveStatus(for: cert)
 	}
 
-	private var _appleStatusSnapshot: CertificateAppleStatusSnapshot? {
-		statusManager.appleStatus(for: cert)
-	}
-
-	private var _appleStatus: CertificateStatusValue {
-		_appleStatusSnapshot?.status ?? .unknown
+	private var _statusTitle: String {
+		statusManager.effectiveStatusTitle(for: cert)
 	}
 
 	@ViewBuilder
@@ -79,17 +75,9 @@ extension CertificatesInfoView {
 				.foregroundStyle(data.ExpirationDate.expirationInfo().color)
 
 			_statusInfo(
-				.localized("Device thinks this certificate is"),
-				status: _deviceStatus,
-				description: _deviceStatus.title,
-				isRefreshing: statusManager.isRefreshingDeviceStatus(for: cert)
-			)
-
-			_statusInfo(
-				.localized("Apple Status"),
-				status: _appleStatus,
-				description: _appleStatusSnapshot?.displayTitle ?? _appleStatus.title,
-				isRefreshing: statusManager.isRefreshingAppleStatus(for: cert)
+				.localized("Status"),
+				status: _status,
+				description: _statusTitle
 			)
 			
 			if let ppq = data.PPQCheck {
@@ -142,12 +130,11 @@ extension CertificatesInfoView {
 	private func _statusInfo(
 		_ title: String,
 		status: CertificateStatusValue,
-		description: String,
-		isRefreshing: Bool
+		description: String
 	) -> some View {
-		let icon = isRefreshing ? "arrow.clockwise" : status.icon
-		let color = isRefreshing ? Color.secondary : status.color
-		let statusText = isRefreshing ? .localized("Checking") : description
+		let icon = status.icon
+		let color = status.color
+		let statusText = description
 
 		LabeledContent(title) {
 			HStack(spacing: 6) {

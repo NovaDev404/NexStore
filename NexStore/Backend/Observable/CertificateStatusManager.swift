@@ -105,6 +105,22 @@ final class CertificateStatusManager: ObservableObject {
 		return appleStatusSnapshots[uuid]
 	}
 
+	func effectiveStatus(for cert: CertificatePair) -> CertificateStatusValue {
+		guard let snapshot = appleStatus(for: cert), snapshot.status != .unknown else {
+			return CertificateStatusValue.deviceStatus(for: cert)
+		}
+
+		return snapshot.status
+	}
+
+	func effectiveStatusTitle(for cert: CertificatePair) -> String {
+		guard let snapshot = appleStatus(for: cert), snapshot.status != .unknown else {
+			return CertificateStatusValue.deviceStatus(for: cert).title
+		}
+
+		return snapshot.displayTitle
+	}
+
 	func hasFreshAppleStatus(for cert: CertificatePair) -> Bool {
 		guard let uuid = cert.uuid else {
 			return false
@@ -139,6 +155,10 @@ final class CertificateStatusManager: ObservableObject {
 		}
 
 		refreshAppleStatus(for: cert, force: false)
+	}
+
+	func refreshStatusIfNeeded(for cert: CertificatePair) {
+		refreshAppleStatusIfNeeded(for: cert)
 	}
 
 	func refreshAppleStatus(for cert: CertificatePair, force: Bool = true) {
@@ -176,19 +196,12 @@ final class CertificateStatusManager: ObservableObject {
 				appleStatusSnapshots[uuid] = snapshot
 				_persistAppleStatuses()
 			} catch {
-				if appleStatusSnapshots[uuid] == nil {
-					appleStatusSnapshots[uuid] = CertificateAppleStatusSnapshot(
-						status: .unknown,
-						rawValue: "",
-						checkedAt: Date()
-					)
-					_persistAppleStatuses()
-				}
+				return
 			}
 		}
 	}
 
-	func refreshStatuses(for cert: CertificatePair, forceApple: Bool = true) {
+	func refreshStatus(for cert: CertificatePair, forceRemote: Bool = true) {
 		guard let uuid = cert.uuid else {
 			return
 		}
@@ -203,7 +216,7 @@ final class CertificateStatusManager: ObservableObject {
 			}
 		}
 
-		refreshAppleStatus(for: cert, force: forceApple)
+		refreshAppleStatus(for: cert, force: forceRemote)
 	}
 
 	func removeAppleStatus(for cert: CertificatePair) {

@@ -35,7 +35,7 @@ struct CertificatesCellView: View {
 			
 			_certInfoPill(data: cert)
 		}
-		.frame(minHeight: 104)
+		.frame(height: 80)
 		.contentTransition(.opacity)
 		.frame(maxWidth: .infinity, alignment: .leading)
 		.onAppear {
@@ -44,7 +44,7 @@ struct CertificatesCellView: View {
 			}
 		}
 		.task(id: cert.uuid ?? cert.objectID.uriRepresentation().absoluteString) {
-			statusManager.refreshAppleStatusIfNeeded(for: cert)
+			statusManager.refreshStatusIfNeeded(for: cert)
 		}
 	}
 }
@@ -53,20 +53,7 @@ struct CertificatesCellView: View {
 extension CertificatesCellView {
 	@ViewBuilder
 	private func _certInfoPill(data: CertificatePair) -> some View {
-		let statusPills = _buildStatusPills(from: data)
-		let metadataPills = _buildMetadataPills(from: data)
-
-		VStack(spacing: 6) {
-			_pillRow(statusPills)
-
-			if !metadataPills.isEmpty {
-				_pillRow(metadataPills)
-			}
-		}
-	}
-	
-	@ViewBuilder
-	private func _pillRow(_ pillItems: [NBPillItem]) -> some View {
+		let pillItems = _buildPills(from: data)
 		HStack(spacing: 6) {
 			ForEach(pillItems.indices, id: \.hashValue) { index in
 				let pill = pillItems[index]
@@ -81,34 +68,18 @@ extension CertificatesCellView {
 		}
 	}
 
-	private func _buildStatusPills(from cert: CertificatePair) -> [NBPillItem] {
-		let deviceStatus = CertificateStatusValue.deviceStatus(for: cert)
-		let appleStatus = statusManager.appleStatus(for: cert)?.status ?? .unknown
-		let isRefreshingDeviceStatus = statusManager.isRefreshingDeviceStatus(for: cert)
-		let isRefreshingAppleStatus = statusManager.isRefreshingAppleStatus(for: cert)
-
-		return [
-			_statusPill(
-				title: String.localized(
-					"Device %@",
-					arguments: isRefreshingDeviceStatus ? String.localized("Checking") : deviceStatus.title
-				),
-				status: deviceStatus,
-				isRefreshing: isRefreshingDeviceStatus
-			),
-			_statusPill(
-				title: String.localized(
-					"Apple %@",
-					arguments: isRefreshingAppleStatus ? String.localized("Checking") : appleStatus.title
-				),
-				status: appleStatus,
-				isRefreshing: isRefreshingAppleStatus
-			)
-		]
-	}
-
-	private func _buildMetadataPills(from cert: CertificatePair) -> [NBPillItem] {
+	private func _buildPills(from cert: CertificatePair) -> [NBPillItem] {
 		var pills: [NBPillItem] = []
+		let status = statusManager.effectiveStatus(for: cert)
+		let title = statusManager.effectiveStatusTitle(for: cert)
+
+		pills.append(
+			NBPillItem(
+				title: title,
+				icon: status.icon,
+				color: status.color
+			)
+		)
 
 		if cert.ppQCheck == true {
 			pills.append(NBPillItem(title: .localized("PPQCheck"), icon: "checkmark.shield", color: .red))
@@ -123,13 +94,5 @@ extension CertificatesCellView {
 		}
 		
 		return pills
-	}
-
-	private func _statusPill(title: String, status: CertificateStatusValue, isRefreshing: Bool) -> NBPillItem {
-		return NBPillItem(
-			title: title,
-			icon: isRefreshing ? "arrow.clockwise" : status.icon,
-			color: isRefreshing ? .secondary : status.color
-		)
 	}
 }
