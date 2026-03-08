@@ -45,7 +45,34 @@ prepare_packages: deps
 	    -clonedSourcePackagesDirPath "$(SOURCE_PACKAGES)" \
 	    -skipPackagePluginValidation
 
+	ALT_SIGN_OPENSSL_XCFRAMEWORK="$$(find "$(SOURCE_PACKAGES)/checkouts" -path "*/Dependencies/OpenSSL.xcframework" -type d | head -n 1)"; \
+	if [ -z "$$ALT_SIGN_OPENSSL_XCFRAMEWORK" ]; then \
+		echo "Expected AltSign OpenSSL.xcframework after package resolution." >&2; \
+		exit 1; \
+	fi
+
 $(SCHEMES): prepare_packages
+	# Zsign expects <openssl/...> headers; reuse AltSign's vendored XCFramework to avoid a second OpenSSL copy.
+	ALT_SIGN_OPENSSL_XCFRAMEWORK="$$(find "$(SOURCE_PACKAGES)/checkouts" -path "*/Dependencies/OpenSSL.xcframework" -type d | head -n 1)"; \
+	if [ -z "$$ALT_SIGN_OPENSSL_XCFRAMEWORK" ]; then \
+		echo "Expected AltSign OpenSSL.xcframework after package resolution." >&2; \
+		exit 1; \
+	fi; \
+	case "$(PLATFORM)" in \
+		iphonesimulator) \
+			OPENSSL_FRAMEWORK="$$(find "$$ALT_SIGN_OPENSSL_XCFRAMEWORK" -path "*/OpenSSL.framework" -type d | grep simulator | head -n 1)" ;; \
+		*) \
+			OPENSSL_FRAMEWORK="$$(find "$$ALT_SIGN_OPENSSL_XCFRAMEWORK" -path "*/OpenSSL.framework" -type d | grep '/ios-' | grep -v simulator | head -n 1)" ;; \
+	esac; \
+	if [ -z "$$OPENSSL_FRAMEWORK" ]; then \
+		OPENSSL_FRAMEWORK="$$(find "$$ALT_SIGN_OPENSSL_XCFRAMEWORK" -path "*/OpenSSL.framework" -type d | head -n 1)"; \
+	fi; \
+	if [ -z "$$OPENSSL_FRAMEWORK" ]; then \
+		echo "Unable to locate an OpenSSL.framework slice inside $$ALT_SIGN_OPENSSL_XCFRAMEWORK." >&2; \
+		exit 1; \
+	fi; \
+	OPENSSL_HEADERS="$$OPENSSL_FRAMEWORK/Headers"; \
+	OPENSSL_FRAMEWORK_DIR="$${OPENSSL_FRAMEWORK%/OpenSSL.framework}"; \
 	xcodebuild $(XCODEBUILD_OVERRIDES) \
 	    -workspace $(WORKSPACE) \
 	    -scheme "$@" \
@@ -56,6 +83,9 @@ $(SCHEMES): prepare_packages
 	    -clonedSourcePackagesDirPath "$(SOURCE_PACKAGES)" \
 	    -disableAutomaticPackageResolution \
 	    -skipPackagePluginValidation \
+	    OTHER_CFLAGS="-I$$OPENSSL_HEADERS" \
+	    OTHER_CPLUSPLUSFLAGS="-I$$OPENSSL_HEADERS" \
+	    OTHER_LDFLAGS="-F$$OPENSSL_FRAMEWORK_DIR" \
 	    CODE_SIGNING_ALLOWED=NO \
 	    ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES=NO
 

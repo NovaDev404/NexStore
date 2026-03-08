@@ -34,7 +34,7 @@ public class NBFetchService {
 extension NBFetchService {
 	public func fetch<T: Decodable>(
 		from urlString: String,
-		completion: @escaping (Result<T, Error>) -> Void
+		completion: @escaping @Sendable (Result<T, Error>) -> Void
 	) {
 		guard let url = URL(string: urlString) else {
 			completion(.failure(NBFetchServiceError.invalidURL))
@@ -46,7 +46,7 @@ extension NBFetchService {
 	
 	public func fetch<T: Decodable>(
 		from url: URL,
-		completion: @escaping (Result<T, Error>) -> Void
+		completion: @escaping @Sendable (Result<T, Error>) -> Void
 	) {
 		DispatchQueue.global(qos: .userInitiated).async {
 			let task = URLSession.shared.dataTask(with: url) { data, response, error in
