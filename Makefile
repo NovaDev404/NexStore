@@ -50,6 +50,11 @@ prepare_packages: deps
 		git -C "$$ALT_SIGN_CHECKOUT" submodule sync --recursive; \
 		git -C "$$ALT_SIGN_CHECKOUT" submodule update --init --recursive; \
 	fi; \
+	ALT_SIGN_LIBCNARY_NODE_H="$$ALT_SIGN_CHECKOUT/Dependencies/ldid/libplist/libcnary/include/node.h"; \
+	ALT_SIGN_LIBPLIST_NODE_H="$$ALT_SIGN_CHECKOUT/Dependencies/ldid/libplist/src/node.h"; \
+	if [ -f "$$ALT_SIGN_LIBCNARY_NODE_H" ] && [ ! -e "$$ALT_SIGN_LIBPLIST_NODE_H" ]; then \
+		ln -sf ../libcnary/include/node.h "$$ALT_SIGN_LIBPLIST_NODE_H"; \
+	fi; \
 	ALT_SIGN_OPENSSL_XCFRAMEWORK="$$(find "$(SOURCE_PACKAGES)" \( -path "*/Dependencies/OpenSSL.xcframework" -o -path "*/OpenSSL.xcframework" \) -type d | head -n 1)"; \
 	if [ -z "$$ALT_SIGN_OPENSSL_XCFRAMEWORK" ]; then \
 		echo "Expected AltSign OpenSSL.xcframework after package resolution." >&2; \
@@ -57,6 +62,10 @@ prepare_packages: deps
 	fi; \
 	ALT_SIGN_LIBPLIST_SRC_DIR="$(SOURCE_PACKAGES)/checkouts/AltSign/Dependencies/ldid/libplist/src"; \
 	if [ -d "$$ALT_SIGN_LIBPLIST_SRC_DIR" ]; then \
+		if [ ! -f "$$ALT_SIGN_LIBPLIST_NODE_H" ]; then \
+			echo "Expected AltSign node.h after submodule initialization." >&2; \
+			exit 1; \
+		fi; \
 		find "$$ALT_SIGN_LIBPLIST_SRC_DIR" -name '*.cpp' -exec perl -0pi -e 's/\b([A-Za-z_][A-Za-z0-9_]*)& \1::operator=\((?:PList::)?\1& ([A-Za-z_][A-Za-z0-9_]*)\)/$$1\& $$1::operator=(const $$1\& $$2)/g' {} +; \
 	else \
 		echo "Expected AltSign libplist sources after submodule initialization." >&2; \
