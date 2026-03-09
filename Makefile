@@ -69,6 +69,10 @@ prepare_packages: deps
 			echo "Expected AltSign libcnary headers after submodule initialization." >&2; \
 			exit 1; \
 		fi; \
+		ALT_SIGN_INTEGER_CPP="$$ALT_SIGN_LIBPLIST_SRC_DIR/Integer.cpp"; \
+		if [ -f "$$ALT_SIGN_INTEGER_CPP" ]; then \
+			perl -0pi -e 's/\buint64_t\s+Integer::GetValue\(\)\s+const\b/int64_t Integer::GetValue() const/g' "$$ALT_SIGN_INTEGER_CPP"; \
+		fi; \
 		find "$$ALT_SIGN_LIBPLIST_SRC_DIR" -name '*.cpp' -exec perl -0pi -e 's/\b([A-Za-z_][A-Za-z0-9_]*)& \1::operator=\((?:PList::)?\1& ([A-Za-z_][A-Za-z0-9_]*)\)/$$1\& $$1::operator=(const $$1\& $$2)/g' {} +; \
 	else \
 		echo "Expected AltSign libplist sources after submodule initialization." >&2; \
