@@ -12,6 +12,11 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Initialize submodules
+        run: |
+          git submodule sync --recursive
+          git submodule update --init --recursive
+
       - name: Clean build artifacts
         run: |
           rm -rf "$RUNNER_TEMP/NexStore"
