@@ -10,7 +10,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          submodules: 'true'
+          submodules: recursive
+
+      - name: Clean build artifacts
+        run: |
+          rm -rf "$RUNNER_TEMP/NexStore"
+          rm -rf ~/Library/Developer/Xcode/DerivedData/*
+          rm -rf .build
       
       - name: Use Xcode 26.2
         run: |

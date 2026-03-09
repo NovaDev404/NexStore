@@ -45,7 +45,12 @@ prepare_packages: deps
 	    -clonedSourcePackagesDirPath "$(SOURCE_PACKAGES)" \
 	    -skipPackagePluginValidation
 
-	ALT_SIGN_OPENSSL_XCFRAMEWORK="$$(find "$(SOURCE_PACKAGES)/checkouts" -path "*/Dependencies/OpenSSL.xcframework" -type d | head -n 1)"; \
+	ALT_SIGN_CHECKOUT="$(SOURCE_PACKAGES)/checkouts/AltSign"; \
+	if [ -f "$$ALT_SIGN_CHECKOUT/.gitmodules" ]; then \
+		git -C "$$ALT_SIGN_CHECKOUT" submodule sync --recursive; \
+		git -C "$$ALT_SIGN_CHECKOUT" submodule update --init --recursive; \
+	fi; \
+	ALT_SIGN_OPENSSL_XCFRAMEWORK="$$(find "$(SOURCE_PACKAGES)" \( -path "*/Dependencies/OpenSSL.xcframework" -o -path "*/OpenSSL.xcframework" \) -type d | head -n 1)"; \
 	if [ -z "$$ALT_SIGN_OPENSSL_XCFRAMEWORK" ]; then \
 		echo "Expected AltSign OpenSSL.xcframework after package resolution." >&2; \
 		exit 1; \
@@ -53,12 +58,15 @@ prepare_packages: deps
 	ALT_SIGN_LIBPLIST_SRC_DIR="$(SOURCE_PACKAGES)/checkouts/AltSign/Dependencies/ldid/libplist/src"; \
 	if [ -d "$$ALT_SIGN_LIBPLIST_SRC_DIR" ]; then \
 		find "$$ALT_SIGN_LIBPLIST_SRC_DIR" -name '*.cpp' -exec perl -0pi -e 's/\b([A-Za-z_][A-Za-z0-9_]*)& \1::operator=\((?:PList::)?\1& ([A-Za-z_][A-Za-z0-9_]*)\)/$$1\& $$1::operator=(const $$1\& $$2)/g' {} +; \
+	else \
+		echo "Expected AltSign libplist sources after submodule initialization." >&2; \
+		exit 1; \
 	fi
 
 $(SCHEMES): prepare_packages
 	# Zsign expects <openssl/...> headers; reuse AltSign's vendored XCFramework to avoid a second OpenSSL copy.
 	set -e; \
-	ALT_SIGN_OPENSSL_XCFRAMEWORK="$$(find "$(SOURCE_PACKAGES)/checkouts" -path "*/Dependencies/OpenSSL.xcframework" -type d | head -n 1)"; \
+	ALT_SIGN_OPENSSL_XCFRAMEWORK="$$(find "$(SOURCE_PACKAGES)" \( -path "*/Dependencies/OpenSSL.xcframework" -o -path "*/OpenSSL.xcframework" \) -type d | head -n 1)"; \
 	if [ -z "$$ALT_SIGN_OPENSSL_XCFRAMEWORK" ]; then \
 		echo "Expected AltSign OpenSSL.xcframework after package resolution." >&2; \
 		exit 1; \
