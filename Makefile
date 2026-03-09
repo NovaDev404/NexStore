@@ -53,6 +53,7 @@ prepare_packages: deps
 	fi; \
 	ALT_SIGN_LIBPLIST_SRC_DIR="$$ALT_SIGN_CHECKOUT/Dependencies/ldid/libplist/src"; \
 	ALT_SIGN_LIBCNARY_INCLUDE_DIR="$$ALT_SIGN_CHECKOUT/Dependencies/ldid/libplist/libcnary/include"; \
+	ALT_SIGN_LIBPLIST_INCLUDE_DIR="$$ALT_SIGN_CHECKOUT/Dependencies/ldid/libplist/include/plist"; \
 	ALT_SIGN_OPENSSL_XCFRAMEWORK="$$(find "$(ALT_SIGN_PATH)" "$(SOURCE_PACKAGES)" \( -path "*/Dependencies/OpenSSL.xcframework" -o -path "*/OpenSSL.xcframework" \) -type d 2>/dev/null | head -n 1)"; \
 	if [ -z "$$ALT_SIGN_OPENSSL_XCFRAMEWORK" ]; then \
 		echo "Expected AltSign OpenSSL.xcframework after package resolution." >&2; \
@@ -62,6 +63,18 @@ prepare_packages: deps
 		if [ ! -f "$$ALT_SIGN_LIBCNARY_INCLUDE_DIR/node.h" ] || [ ! -f "$$ALT_SIGN_LIBCNARY_INCLUDE_DIR/object.h" ] || [ ! -f "$$ALT_SIGN_LIBCNARY_INCLUDE_DIR/node_list.h" ]; then \
 			echo "Expected AltSign libcnary headers after submodule initialization." >&2; \
 			exit 1; \
+		fi; \
+		if [ -d "$$ALT_SIGN_LIBPLIST_INCLUDE_DIR" ]; then \
+			find "$$ALT_SIGN_LIBPLIST_INCLUDE_DIR" -name '*.h' -exec perl -0pi -e 's/\b([A-Za-z_][A-Za-z0-9_]*)&\s+operator=\(((?:const\s+)?)(?:PList::)?\1&\s+([A-Za-z_][A-Za-z0-9_]*)\)/$$1\& operator=(const $$1\& $$3)/g' {} +; \
+		fi; \
+		find "$$ALT_SIGN_LIBPLIST_SRC_DIR" -name '*.cpp' -exec perl -0pi -e 's/\b([A-Za-z_][A-Za-z0-9_]*)&\s+\1::operator=\(((?:const\s+)?)(?:PList::)?\1&\s+([A-Za-z_][A-Za-z0-9_]*)\)/$$1\& $$1::operator=(const $$1\& $$3)/g' {} +; \
+		ALT_SIGN_INTEGER_CPP="$$ALT_SIGN_LIBPLIST_SRC_DIR/Integer.cpp"; \
+		if [ -f "$$ALT_SIGN_INTEGER_CPP" ]; then \
+			perl -0pi -e 's/\buint64_t\s+Integer::GetValue\(\)\s+const\b/int64_t Integer::GetValue() const/g' "$$ALT_SIGN_INTEGER_CPP"; \
+		fi; \
+		ALT_SIGN_DATE_CPP="$$ALT_SIGN_LIBPLIST_SRC_DIR/Date.cpp"; \
+		if [ -f "$$ALT_SIGN_DATE_CPP" ]; then \
+			perl -0pi -e 's/\btimeval\s+t\s*=\s*d\.GetValue\(\);/int64_t t = d.GetValue();/g; s/\bDate::Date\(timeval\s+([A-Za-z_][A-Za-z0-9_]*)\)\b/Date::Date(int64_t $$1)/g; s/\bvoid\s+Date::SetValue\(timeval\s+([A-Za-z_][A-Za-z0-9_]*)\)\b/void Date::SetValue(int64_t $$1)/g; s/\btimeval\s+Date::GetValue\(\)\s+const\b/int64_t Date::GetValue() const/g' "$$ALT_SIGN_DATE_CPP"; \
 		fi; \
 	else \
 		echo "Expected AltSign libplist sources after submodule initialization." >&2; \
