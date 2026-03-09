@@ -77,6 +77,14 @@ prepare_packages: deps
 			find "$$ALT_SIGN_LIBPLIST_INCLUDE_DIR" -name '*.h' -exec perl -0pi -e 's/\b([A-Za-z_][A-Za-z0-9_]*)&\s+operator=\(((?:const\s+)?)(?:PList::)?\1&\s+([A-Za-z_][A-Za-z0-9_]*)\)/$$1\& operator=(const $$1\& $$3)/g' {} +; \
 		fi; \
 		find "$$ALT_SIGN_LIBPLIST_SRC_DIR" -name '*.cpp' -exec perl -0pi -e 's/\b([A-Za-z_][A-Za-z0-9_]*)&\s+\1::operator=\(((?:const\s+)?)(?:PList::)?\1&\s+([A-Za-z_][A-Za-z0-9_]*)\)/$$1\& $$1::operator=(const $$1\& $$3)/g' {} +; \
+		ALT_SIGN_DICTIONARY_H="$$ALT_SIGN_LIBPLIST_INCLUDE_DIR/Dictionary.h"; \
+		if [ -f "$$ALT_SIGN_DICTIONARY_H" ]; then \
+			perl -0pi -e 's/\biterator\s+Insert\s*\(\s*(?:const\s+)?std::string\s*&\s*([A-Za-z_][A-Za-z0-9_]*)\s*,\s*(?:const\s+)?(?:PList::)?Node\s*\*\s*([A-Za-z_][A-Za-z0-9_]*)\s*\)/iterator Insert(const std::string\& $$1, const Node* $$2)/g; s/\biterator\s+Insert\s*\(\s*(?:const\s+)?std::string\s*&\s*([A-Za-z_][A-Za-z0-9_]*)\s*,\s*(?:const\s+)?(?:PList::)?Node\s*&\s*([A-Za-z_][A-Za-z0-9_]*)\s*\)/iterator Insert(const std::string\& $$1, const Node\& $$2)/g' "$$ALT_SIGN_DICTIONARY_H"; \
+		fi; \
+		ALT_SIGN_DICTIONARY_CPP="$$ALT_SIGN_LIBPLIST_SRC_DIR/Dictionary.cpp"; \
+		if [ -f "$$ALT_SIGN_DICTIONARY_CPP" ]; then \
+			perl -0pi -e 's/\bDictionary::iterator\s+Dictionary::Insert\s*\(\s*(?:const\s+)?std::string\s*&\s*([A-Za-z_][A-Za-z0-9_]*)\s*,\s*(?:const\s+)?(?:PList::)?Node\s*\*\s*([A-Za-z_][A-Za-z0-9_]*)\s*\)/Dictionary::iterator Dictionary::Insert(const std::string\& $$1, const Node* $$2)/g; s/\bDictionary::iterator\s+Dictionary::Insert\s*\(\s*(?:const\s+)?std::string\s*&\s*([A-Za-z_][A-Za-z0-9_]*)\s*,\s*(?:const\s+)?(?:PList::)?Node\s*&\s*([A-Za-z_][A-Za-z0-9_]*)\s*\)/Dictionary::iterator Dictionary::Insert(const std::string\& $$1, const Node\& $$2)/g' "$$ALT_SIGN_DICTIONARY_CPP"; \
+		fi; \
 		ALT_SIGN_INTEGER_CPP="$$ALT_SIGN_LIBPLIST_SRC_DIR/Integer.cpp"; \
 		if [ -f "$$ALT_SIGN_INTEGER_CPP" ]; then \
 			perl -0pi -e 's/\buint64_t\s+Integer::GetValue\(\)\s+const\b/int64_t Integer::GetValue() const/g' "$$ALT_SIGN_INTEGER_CPP"; \
